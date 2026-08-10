@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import { useEffect, useState } from "react"
 import {
   Building2,
@@ -9,6 +11,8 @@ import {
   Save,
   Loader2,
   CheckCircle2,
+  User,
+  Users,
 } from "lucide-react"
 
 import { createSupabaseBrowserClient } from "@/lib/supabase-browser"
@@ -754,6 +758,71 @@ export default function ConfiguracionPage() {
             />
 
           </div>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
+          USUARIOS
+          ===================================================== */}
+
+      <section className="rounded-xl border border-[#e4d8ca] bg-white">
+
+        <div className="border-b border-[#eee4db] px-6 py-5">
+
+          <div className="flex items-center gap-3">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#f5eadf] text-[#79583f]">
+
+              <Users
+                size={20}
+              />
+
+            </div>
+
+            <div>
+
+              <h2 className="font-semibold text-[#3b2a20]">
+                Usuarios
+              </h2>
+
+              <p className="text-xs text-[#8a7562]">
+                Administra las personas que pueden acceder a CASMAD.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+
+          <div>
+
+            <p className="font-medium text-[#3b2a20]">
+              Gestión de usuarios
+            </p>
+
+            <p className="mt-1 text-sm text-[#8a7562]">
+              Agrega o elimina usuarios que pueden iniciar sesión en el sistema.
+            </p>
+
+          </div>
+
+          <Link
+            href="/usuarios"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#5c4030] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#4b3326]"
+          >
+
+            <Users
+              size={18}
+            />
+
+            Administrar usuarios
+
+          </Link>
 
         </div>
 
