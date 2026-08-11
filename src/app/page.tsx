@@ -628,7 +628,7 @@ export default function Home() {
             </Link>
 
             <Link
-              href="/clientes/nuevo"
+              href="/clientes"
               className="flex w-full items-center justify-between rounded-xl border border-[#e4d8ca] bg-[#fcfaf8] p-4 text-left transition hover:border-[#b79a7d] hover:bg-[#f5eee7]"
             >
               <div className="flex items-center gap-3">
@@ -654,7 +654,7 @@ export default function Home() {
             </Link>
 
             <Link
-              href="/inventario/nuevo"
+              href="/inventario"
               className="flex w-full items-center justify-between rounded-xl border border-[#e4d8ca] bg-[#fcfaf8] p-4 text-left transition hover:border-[#b79a7d] hover:bg-[#f5eee7]"
             >
               <div className="flex items-center gap-3">
