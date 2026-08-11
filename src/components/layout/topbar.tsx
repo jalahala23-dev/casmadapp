@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
+import { useEffect, useMemo, useState } from "react"
 import {
   Bell,
   ChevronDown,
   FileText,
   Loader2,
   LogOut,
+  Menu,
   Package,
   Settings,
   User,
@@ -39,7 +39,13 @@ type Notificacion = {
   icono: "factura" | "inventario" | "cotizacion"
 }
 
-export function Topbar() {
+type TopbarProps = {
+  abrirMenuMovil: () => void
+}
+
+export function Topbar({
+  abrirMenuMovil,
+}: TopbarProps) {
   const router = useRouter()
 
   const supabase = useMemo(
@@ -121,15 +127,6 @@ export function Topbar() {
 
       const avisos: Notificacion[] = []
 
-      /*
-       * =====================================================
-       * STOCK BAJO
-       * =====================================================
-       *
-       * Usamos 5 como límite porque es el criterio utilizado
-       * actualmente en el módulo de inventario.
-       */
-
       const [
         productosResult,
         facturasResult,
@@ -137,108 +134,47 @@ export function Topbar() {
       ] = await Promise.all([
         supabase
           .from("productos")
-          .select(
-            "id, nombre, stock"
-          )
-          .eq(
-            "estado",
-            "activo"
-          )
-          .lte(
-            "stock",
-            5
-          )
-          .order(
-            "stock",
-            {
-              ascending: true,
-            }
-          )
+          .select("id, nombre, stock")
+          .eq("estado", "activo")
+          .lte("stock", 5)
+          .order("stock", {
+            ascending: true,
+          })
           .limit(3),
-
-        /*
-         * =================================================
-         * FACTURAS PENDIENTES
-         * =================================================
-         *
-         * Las facturas emitidas todavía tienen saldo
-         * pendiente. Las pagadas ya no aparecen aquí.
-         */
 
         supabase
           .from("facturas")
-          .select(
-            "id, numero, estado"
-          )
-          .eq(
-            "estado",
-            "emitida"
-          )
-          .order(
-            "numero",
-            {
-              ascending: false,
-            }
-          )
+          .select("id, numero, estado")
+          .eq("estado", "emitida")
+          .order("numero", {
+            ascending: false,
+          })
           .limit(3),
-
-        /*
-         * =================================================
-         * COTIZACIONES APROBADAS
-         * =================================================
-         *
-         * El estado correcto del sistema es "aprobada",
-         * no "aceptada".
-         */
 
         supabase
           .from("cotizaciones")
-          .select(
-            "id, numero, estado"
-          )
-          .eq(
-            "estado",
-            "aprobada"
-          )
-          .order(
-            "created_at",
-            {
-              ascending: false,
-            }
-          )
+          .select("id, numero, estado")
+          .eq("estado", "aprobada")
+          .order("created_at", {
+            ascending: false,
+          })
           .limit(3),
       ])
 
-      /*
-       * =====================================================
-       * PROCESAR STOCK BAJO
-       * =====================================================
-       */
-
-      if (
-        !productosResult.error
-      ) {
+      if (!productosResult.error) {
         for (
           const producto of
-          productosResult.data ||
-          []
+          productosResult.data || []
         ) {
           avisos.push({
             id: `producto-${producto.id}`,
-
-            titulo:
-              "Stock bajo",
-
+            titulo: "Stock bajo",
             descripcion:
               `${producto.nombre} tiene ${
                 producto.stock ?? 0
               } unidades en inventario.`,
-
-            href:
-              "/inventario",
-
-            icono:
-              "inventario",
+            href: "/inventario",
+            icono: "inventario",
           })
         }
       } else {
@@ -248,38 +184,22 @@ export function Topbar() {
         )
       }
 
-      /*
-       * =====================================================
-       * PROCESAR FACTURAS
-       * =====================================================
-       */
-
-      if (
-        !facturasResult.error
-      ) {
+      if (!facturasResult.error) {
         for (
           const factura of
-          facturasResult.data ||
-          []
+          facturasResult.data || []
         ) {
           avisos.push({
-            id:
-              `factura-${factura.id}`,
-
-            titulo:
-              "Factura pendiente",
-
+            id: `factura-${factura.id}`,
+            titulo: "Factura pendiente",
             descripcion:
               `La factura ${numeroDocumento(
                 "FAC",
                 factura.numero
               )} está pendiente de pago.`,
-
             href:
               `/facturacion/${factura.id}`,
-
-            icono:
-              "factura",
+            icono: "factura",
           })
         }
       } else {
@@ -289,38 +209,24 @@ export function Topbar() {
         )
       }
 
-      /*
-       * =====================================================
-       * PROCESAR COTIZACIONES
-       * =====================================================
-       */
-
-      if (
-        !cotizacionesResult.error
-      ) {
+      if (!cotizacionesResult.error) {
         for (
           const cotizacion of
-          cotizacionesResult.data ||
-          []
+          cotizacionesResult.data || []
         ) {
           avisos.push({
             id:
               `cotizacion-${cotizacion.id}`,
-
             titulo:
               "Cotización aprobada",
-
             descripcion:
               `${numeroDocumento(
                 "COT",
                 cotizacion.numero
               )} está lista para facturar.`,
-
             href:
               `/cotizaciones/${cotizacion.id}`,
-
-            icono:
-              "cotizacion",
+            icono: "cotizacion",
           })
         }
       } else {
@@ -329,12 +235,6 @@ export function Topbar() {
           cotizacionesResult.error
         )
       }
-
-      /*
-       * =====================================================
-       * LIMITAR NOTIFICACIONES
-       * =====================================================
-       */
 
       const avisosLimitados =
         avisos.slice(0, 6)
@@ -360,14 +260,8 @@ export function Topbar() {
       }
     }
 
-    cargarUsuario()
-    cargarNotificaciones()
-
-    /*
-     * Escuchar cambios de sesión.
-     * Esto permite actualizar el nombre del usuario
-     * si la sesión cambia sin recargar toda la aplicación.
-     */
+    void cargarUsuario()
+    void cargarNotificaciones()
 
     const {
       data: listener,
@@ -382,8 +276,7 @@ export function Topbar() {
           }
 
           if (
-            evento ===
-            "SIGNED_OUT"
+            evento === "SIGNED_OUT"
           ) {
             setUsuario(null)
             return
@@ -394,8 +287,7 @@ export function Topbar() {
           ) {
             const metadata =
               sesion.user
-                .user_metadata ||
-              {}
+                .user_metadata || {}
 
             const nombre =
               metadata.full_name ||
@@ -421,20 +313,12 @@ export function Topbar() {
     }
   }, [supabase])
 
-  /*
-   * =====================================================
-   * CERRAR SESIÓN
-   * =====================================================
-   */
-
   async function cerrarSesion() {
     if (cerrandoSesion) {
       return
     }
 
-    setCerrandoSesion(
-      true
-    )
+    setCerrandoSesion(true)
 
     try {
       const {
@@ -448,17 +332,11 @@ export function Topbar() {
           error
         )
 
-        setCerrandoSesion(
-          false
-        )
-
+        setCerrandoSesion(false)
         return
       }
 
-      router.replace(
-        "/login"
-      )
-
+      router.replace("/login")
       router.refresh()
     } catch (error) {
       console.error(
@@ -466,22 +344,13 @@ export function Topbar() {
         error
       )
 
-      setCerrandoSesion(
-        false
-      )
+      setCerrandoSesion(false)
     }
   }
 
-  /*
-   * =====================================================
-   * MARCAR NOTIFICACIONES COMO VISTAS
-   * =====================================================
-   */
-
   function marcarNotificacionesComoVistas() {
     if (
-      notificaciones.length ===
-      0
+      notificaciones.length === 0
     ) {
       return
     }
@@ -490,9 +359,7 @@ export function Topbar() {
       notificaciones
     )
 
-    setNotificacionesVistas(
-      true
-    )
+    setNotificacionesVistas(true)
   }
 
   const nombreUsuario =
@@ -504,58 +371,58 @@ export function Topbar() {
     "Sesión activa"
 
   const mostrarPuntoNotificaciones =
-    notificaciones.length >
-      0 &&
+    notificaciones.length > 0 &&
     !notificacionesVistas
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-[#e4d8ca] bg-white px-4 md:px-6">
+    <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between gap-2 border-b border-[#e4d8ca] bg-white px-3 sm:px-4 md:px-6">
 
-      {/* ===================================================
-          IDENTIDAD DEL SISTEMA
-          =================================================== */}
+      {/* MENÚ MÓVIL */}
 
-      <div>
-        <p className="text-sm font-medium text-[#6b5746]">
-          Sistema administrativo
-        </p>
+      <div className="flex min-w-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={abrirMenuMovil}
+          aria-label="Abrir menú"
+          className="shrink-0 rounded-lg p-2 text-[#5c4030] transition hover:bg-[#f3ece5] md:hidden"
+        >
+          <Menu size={23} />
+        </button>
 
-        <p className="text-xs text-[#9a8775]">
-          Muebles Castillo
-        </p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-[#6b5746]">
+            Sistema administrativo
+          </p>
+
+          <p className="truncate text-xs text-[#9a8775]">
+            Muebles Castillo
+          </p>
+        </div>
       </div>
 
-      {/* ===================================================
-          CONTROLES DEL USUARIO
-          =================================================== */}
+      {/* CONTROLES */}
 
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-3">
 
-        {/* =================================================
-            NOTIFICACIONES
-            ================================================= */}
+        {/* NOTIFICACIONES */}
 
         <DropdownMenu
           onOpenChange={(abierto) => {
             if (
               abierto &&
-              notificaciones.length >
-                0
+              notificaciones.length > 0
             ) {
               marcarNotificacionesComoVistas()
             }
           }}
         >
-
           <DropdownMenuTrigger asChild>
-
             <button
               type="button"
               className="relative rounded-lg p-2 text-[#6b5746] transition hover:bg-[#f3ece5]"
               aria-label="Notificaciones"
               title="Notificaciones"
             >
-
               <Bell size={20} />
 
               {mostrarPuntoNotificaciones && (
@@ -564,20 +431,14 @@ export function Topbar() {
                   aria-hidden="true"
                 />
               )}
-
             </button>
-
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
             align="end"
-            className="w-80 border border-[#e4d8ca] bg-white p-0 text-[#3b2a20]"
+            className="w-[min(20rem,calc(100vw-1.5rem))] border border-[#e4d8ca] bg-white p-0 text-[#3b2a20]"
           >
-
-            {/* CABECERA */}
-
             <div className="border-b border-[#eee4db] px-4 py-3">
-
               <p className="text-sm font-semibold">
                 Notificaciones
               </p>
@@ -585,31 +446,18 @@ export function Topbar() {
               <p className="text-xs text-[#9a8775]">
                 Avisos recientes del sistema
               </p>
-
             </div>
 
-            {/* CARGANDO */}
-
             {cargandoNotificaciones ? (
-
               <div className="flex items-center gap-2 px-4 py-5 text-sm text-[#8a7562]">
-
                 <Loader2
                   size={17}
                   className="animate-spin"
                 />
-
                 Cargando avisos...
-
               </div>
-
-            ) : notificaciones.length ===
-              0 ? (
-
-              /* SIN NOTIFICACIONES */
-
+            ) : notificaciones.length === 0 ? (
               <div className="px-4 py-6 text-center">
-
                 <Bell
                   size={26}
                   className="mx-auto mb-2 text-[#b79a7d]"
@@ -622,31 +470,18 @@ export function Topbar() {
                 <p className="mt-1 text-xs text-[#9a8775]">
                   El sistema no tiene avisos pendientes.
                 </p>
-
               </div>
-
             ) : (
-
-              /* LISTA DE NOTIFICACIONES */
-
               <div className="max-h-80 overflow-y-auto p-1">
-
                 {notificaciones.map(
-                  (
-                    notificacion
-                  ) => {
-
+                  (notificacion) => {
                     const Icon =
                       notificacion.icono ===
                       "inventario"
                         ? Package
-                        : notificacion.icono ===
-                          "factura"
-                        ? FileText
                         : FileText
 
                     return (
-
                       <DropdownMenuItem
                         key={
                           notificacion.id
@@ -654,217 +489,126 @@ export function Topbar() {
                         asChild
                         className="cursor-pointer rounded-lg p-0 focus:bg-[#f7efe8]"
                       >
-
                         <Link
                           href={
                             notificacion.href
                           }
                           className="flex w-full gap-3 px-3 py-3"
                         >
-
                           <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f1e4d7] text-[#5c4030]">
-
-                            <Icon
-                              size={17}
-                            />
-
+                            <Icon size={17} />
                           </span>
 
                           <span className="min-w-0">
-
                             <span className="block text-sm font-semibold text-[#3b2a20]">
-
                               {
                                 notificacion.titulo
                               }
-
                             </span>
 
                             <span className="mt-0.5 block text-xs leading-5 text-[#8a7562]">
-
                               {
                                 notificacion.descripcion
                               }
-
                             </span>
-
                           </span>
-
                         </Link>
-
                       </DropdownMenuItem>
-
                     )
                   }
                 )}
-
               </div>
-
             )}
-
           </DropdownMenuContent>
-
         </DropdownMenu>
-
-        {/* SEPARADOR */}
 
         <div className="hidden h-8 w-px bg-[#e4d8ca] sm:block" />
 
-        {/* =================================================
-            USUARIO
-            ================================================= */}
+        {/* USUARIO */}
 
         <DropdownMenu>
-
           <DropdownMenuTrigger asChild>
-
             <button
               type="button"
-              className="flex items-center gap-2 rounded-lg px-2 py-1.5 transition hover:bg-[#f3ece5]"
+              className="flex items-center gap-2 rounded-lg px-1.5 py-1.5 transition hover:bg-[#f3ece5] sm:px-2"
               aria-label="Menú de usuario"
             >
-
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#5c4030] text-white">
-
-                <User
-                  size={18}
-                />
-
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#5c4030] text-white">
+                <User size={18} />
               </div>
 
-              <div className="hidden text-left sm:block">
-
-                <p className="max-w-40 truncate text-sm font-semibold text-[#3b2a20]">
-
-                  {
-                    nombreUsuario
-                  }
-
+              <div className="hidden max-w-40 text-left sm:block">
+                <p className="truncate text-sm font-semibold text-[#3b2a20]">
+                  {nombreUsuario}
                 </p>
 
                 <p className="text-xs text-[#9a8775]">
                   Administrador
                 </p>
-
               </div>
 
               <ChevronDown
                 size={16}
                 className="hidden text-[#8a7562] sm:block"
               />
-
             </button>
-
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
             align="end"
-            className="w-64 border border-[#e4d8ca] bg-white text-[#3b2a20]"
+            className="w-[min(16rem,calc(100vw-1.5rem))] border border-[#e4d8ca] bg-white text-[#3b2a20]"
           >
-
-            {/* DATOS DEL USUARIO */}
-
             <DropdownMenuLabel className="px-3 py-2">
-
               <span className="block truncate text-sm font-semibold text-[#3b2a20]">
-
-                {
-                  nombreUsuario
-                }
-
+                {nombreUsuario}
               </span>
 
               <span className="block truncate text-xs font-normal text-[#9a8775]">
-
-                {
-                  correoUsuario
-                }
-
+                {correoUsuario}
               </span>
-
             </DropdownMenuLabel>
 
-            <DropdownMenuSeparator
-              className="bg-[#eee4db]"
-            />
-
-            {/* CONFIGURACIÓN */}
+            <DropdownMenuSeparator className="bg-[#eee4db]" />
 
             <DropdownMenuItem
               asChild
               className="cursor-pointer gap-2 px-3 py-2 focus:bg-[#f7efe8]"
             >
-
-              <Link
-                href="/configuracion"
-              >
-
-                <Settings
-                  size={16}
-                />
-
+              <Link href="/configuracion">
+                <Settings size={16} />
                 Configuración
-
               </Link>
-
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator
-              className="bg-[#eee4db]"
-            />
-
-            {/* CERRAR SESIÓN */}
+            <DropdownMenuSeparator className="bg-[#eee4db]" />
 
             <DropdownMenuItem
               className="cursor-pointer gap-2 px-3 py-2 text-red-700 focus:bg-red-50 focus:text-red-700"
-              disabled={
-                cerrandoSesion
-              }
+              disabled={cerrandoSesion}
               onSelect={(evento) => {
-
                 evento.preventDefault()
-
-                cerrarSesion()
-
+                void cerrarSesion()
               }}
             >
-
               {cerrandoSesion ? (
-
                 <Loader2
                   size={16}
                   className="animate-spin"
                 />
-
               ) : (
-
-                <LogOut
-                  size={16}
-                />
-
+                <LogOut size={16} />
               )}
 
               {cerrandoSesion
                 ? "Cerrando sesión..."
                 : "Cerrar sesión"}
-
             </DropdownMenuItem>
-
           </DropdownMenuContent>
-
         </DropdownMenu>
-
       </div>
-
     </header>
   )
 }
-
-/*
- * =========================================================
- * FORMATO DE DOCUMENTOS
- * =========================================================
- */
 
 function numeroDocumento(
   prefijo: string,
@@ -882,36 +626,21 @@ function numeroDocumento(
   return `${prefijo}-sin número`
 }
 
-/*
- * =========================================================
- * CLAVE DE NOTIFICACIONES
- * =========================================================
- */
-
 function obtenerClaveNotificaciones(
   notificaciones: Notificacion[]
 ) {
   return notificaciones
     .map(
-      (
-        notificacion
-      ) =>
+      (notificacion) =>
         notificacion.id
     )
     .sort()
     .join("|")
 }
 
-/*
- * =========================================================
- * NOTIFICACIONES VISTAS
- * =========================================================
- */
-
 function obtenerClaveNotificacionesVistas() {
   if (
-    typeof window ===
-    "undefined"
+    typeof window === "undefined"
   ) {
     return ""
   }
@@ -923,18 +652,11 @@ function obtenerClaveNotificacionesVistas() {
   )
 }
 
-/*
- * =========================================================
- * GUARDAR NOTIFICACIONES VISTAS
- * =========================================================
- */
-
 function guardarNotificacionesVistas(
   notificaciones: Notificacion[]
 ) {
   if (
-    typeof window ===
-    "undefined"
+    typeof window === "undefined"
   ) {
     return
   }

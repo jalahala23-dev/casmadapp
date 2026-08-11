@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { usePathname } from "next/navigation"
 
 import { Sidebar } from "@/components/layout/sidebar"
@@ -11,6 +12,8 @@ export function AppShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const [menuMovilAbierto, setMenuMovilAbierto] =
+    useState(false)
 
   if (pathname === "/login") {
     return children
@@ -18,12 +21,21 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen bg-[#f8f5f1]">
-      <Sidebar />
+      <Sidebar
+        movilAbierto={menuMovilAbierto}
+        cerrarMenuMovil={() =>
+          setMenuMovilAbierto(false)
+        }
+      />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar />
+        <Topbar
+          abrirMenuMovil={() =>
+            setMenuMovilAbierto(true)
+          }
+        />
 
-        <main className="flex-1 p-4 md:p-6">
+        <main className="min-w-0 flex-1 p-3 sm:p-4 md:p-6">
           {children}
         </main>
       </div>
