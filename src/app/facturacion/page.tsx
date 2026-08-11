@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   FileText,
   Plus,
@@ -182,7 +183,7 @@ function estadoEfectivo(
   /*
    * Si la factura tiene pagos suficientes para cubrir
    * el total, la mostramos como PAGADA aunque por
-   * cualquier motivo el campo estado de la BD todavía
+   * cualquier motivo el campo estado de la BD todavÃ­a
    * no se haya actualizado.
    */
 
@@ -200,10 +201,12 @@ function estadoEfectivo(
 }
 
 // ==========================================================
-// PÁGINA
+// PÃGINA
 // ==========================================================
 
 export default function FacturacionPage() {
+  const router = useRouter()
+
   const supabase =
     createSupabaseBrowserClient()
 
@@ -699,7 +702,7 @@ export default function FacturacionPage() {
             <div>
 
               <h1 className="text-3xl font-bold text-[#3b2a20]">
-                Facturación
+                FacturaciÃ³n
               </h1>
 
               <p className="text-sm text-[#8a7562]">
@@ -966,7 +969,7 @@ export default function FacturacionPage() {
                   e.target.value
                 )
               }
-              placeholder="Buscar por número o cliente..."
+              placeholder="Buscar por nÃºmero o cliente..."
               className="w-full rounded-lg border border-[#e4d8ca] bg-white py-2.5 pl-10 pr-3 text-sm text-[#3b2a20] outline-none focus:border-[#8a6046]"
             />
 
@@ -1057,7 +1060,7 @@ export default function FacturacionPage() {
               estadoFiltro !==
                 "todos"
                 ? "No encontramos facturas que coincidan con los filtros."
-                : "Todavía no se ha creado ninguna factura."}
+                : "TodavÃ­a no se ha creado ninguna factura."}
 
             </p>
 
@@ -1121,7 +1124,7 @@ export default function FacturacionPage() {
                   </th>
 
                   <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Acción
+                    AcciÃ³n
                   </th>
 
                 </tr>
@@ -1166,7 +1169,29 @@ export default function FacturacionPage() {
                         key={
                           factura.id
                         }
-                        className="border-b border-[#f0e8df] last:border-0 hover:bg-[#fcfaf8]"
+                        role="link"
+                        tabIndex={0}
+                        aria-label={`Ver ${numero}`}
+                        onClick={() =>
+                          router.push(
+                            `/facturacion/${factura.id}`
+                          )
+                        }
+                        onKeyDown={(event) => {
+                          if (
+                            event.key ===
+                              "Enter" ||
+                            event.key ===
+                              " "
+                          ) {
+                            event.preventDefault()
+
+                            router.push(
+                              `/facturacion/${factura.id}`
+                            )
+                          }
+                        }}
+                        className="cursor-pointer border-b border-[#f0e8df] last:border-0 hover:bg-[#fcfaf8] focus:bg-[#fcfaf8] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8a6046]"
                       >
 
                         {/* FACTURA */}
@@ -1243,7 +1268,7 @@ export default function FacturacionPage() {
                             "anulada" ? (
 
                             <span className="text-sm text-[#a79586]">
-                              —
+                              â€”
                             </span>
 
                           ) : (
@@ -1268,7 +1293,7 @@ export default function FacturacionPage() {
                           null ? (
 
                             <span className="text-sm text-[#a79586]">
-                              —
+                              â€”
                             </span>
 
                           ) : saldoMostrar <=
@@ -1317,7 +1342,7 @@ export default function FacturacionPage() {
 
                         </td>
 
-                        {/* ACCIÓN */}
+                        {/* ACCIÃ“N */}
 
                         <td className="px-5 py-4 text-right">
 
