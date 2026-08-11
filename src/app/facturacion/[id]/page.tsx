@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import {
+  AlertTriangle,
   ArrowLeft,
   CalendarDays,
   CreditCard,
@@ -90,6 +91,10 @@ export default function FacturaDetallePage() {
   const [observacionesPago, setObservacionesPago] = useState("")
   const [registrandoPago, setRegistrandoPago] = useState(false)
   const [errorPago, setErrorPago] = useState("")
+  const [mostrarFormularioAnulacion, setMostrarFormularioAnulacion] = useState(false)
+  const [motivoAnulacion, setMotivoAnulacion] = useState("")
+  const [anulandoFactura, setAnulandoFactura] = useState(false)
+  const [errorAnulacion, setErrorAnulacion] = useState("")
 
   useEffect(() => {
     if (id) {
@@ -296,6 +301,10 @@ export default function FacturaDetallePage() {
     factura?.estado === "emitida" &&
     saldoPendiente > 0.005
 
+  const puedeAnularFactura =
+    factura?.estado === "emitida" ||
+    factura?.estado === "pagada"
+
   async function registrarPago() {
     if (!factura) {
       return
@@ -366,6 +375,62 @@ export default function FacturaDetallePage() {
     setObservacionesPago("")
     setMostrarFormularioPago(false)
     setRegistrandoPago(false)
+
+    await cargarFactura()
+  }
+
+  async function anularFactura() {
+    if (!factura || !puedeAnularFactura) {
+      return
+    }
+
+    setErrorAnulacion("")
+
+    const motivo = motivoAnulacion.trim()
+
+    if (!motivo) {
+      setErrorAnulacion(
+        "Ingresa el motivo de la anulación."
+      )
+      return
+    }
+
+    const confirmar = window.confirm(
+      `¿Confirmas la anulación de ${numeroFactura()}? Esta acción devolverá al inventario las cantidades descontadas al emitir la factura.`
+    )
+
+    if (!confirmar) {
+      return
+    }
+
+    setAnulandoFactura(true)
+
+    const { error: anulacionError } = await supabase.rpc(
+      "anular_factura_con_inventario",
+      {
+        p_factura_id: factura.id,
+        p_observaciones: motivo,
+      }
+    )
+
+    if (anulacionError) {
+      console.error(
+        "ERROR AL ANULAR FACTURA:",
+        anulacionError
+      )
+
+      setErrorAnulacion(
+        anulacionError.message ||
+          "No se pudo anular la factura."
+      )
+
+      setAnulandoFactura(false)
+      return
+    }
+
+    setMotivoAnulacion("")
+    setMostrarFormularioAnulacion(false)
+    setAnulandoFactura(false)
 
     await cargarFactura()
   }
@@ -669,6 +734,21 @@ export default function FacturaDetallePage() {
                     Registrar pago
                   </button>
                 )}
+
+                {puedeAnularFactura && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setErrorAnulacion("")
+                      setMostrarFormularioAnulacion(true)
+                    }}
+                    disabled={anulandoFactura}
+                    className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <AlertTriangle size={17} />
+                    Anular factura
+                  </button>
+                )}
               </div>
             </div>
 
@@ -927,6 +1007,91 @@ export default function FacturaDetallePage() {
                             size={17}
                           />
                           Guardar pago
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+          {mostrarFormularioAnulacion &&
+            puedeAnularFactura && (
+              <Card className="mt-6 border-red-200 bg-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-700">
+                    <AlertTriangle size={19} />
+                    Anular factura
+                  </CardTitle>
+
+                  <p className="text-sm text-[#8a7562]">
+                    Esta acción cambiará la factura a anulada y devolverá al inventario las cantidades que fueron descontadas al emitirla.
+                  </p>
+                </CardHeader>
+
+                <CardContent>
+                  {errorAnulacion && (
+                    <div className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                      {errorAnulacion}
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium text-[#5c4635]">
+                      Motivo de la anulación
+                    </label>
+
+                    <textarea
+                      value={motivoAnulacion}
+                      onChange={(event) =>
+                        setMotivoAnulacion(
+                          event.target.value
+                        )
+                      }
+                      rows={4}
+                      disabled={anulandoFactura}
+                      className="w-full resize-y rounded-lg border border-[#d9cabb] bg-white px-3 py-2.5 text-sm text-[#3b2a20] outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-[#faf7f4]"
+                      placeholder="Describe por qué se está anulando la factura..."
+                    />
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap justify-end gap-2">
+                    <button
+                      type="button"
+                      disabled={anulandoFactura}
+                      onClick={() => {
+                        setMostrarFormularioAnulacion(false)
+                        setMotivoAnulacion("")
+                        setErrorAnulacion("")
+                      }}
+                      className="rounded-lg border border-[#e4d8ca] bg-white px-4 py-2.5 text-sm font-semibold text-[#5c4030] hover:bg-[#f8f3ee] disabled:opacity-50"
+                    >
+                      Cancelar
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={
+                        anulandoFactura ||
+                        !motivoAnulacion.trim()
+                      }
+                      onClick={anularFactura}
+                      className="flex items-center gap-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {anulandoFactura ? (
+                        <>
+                          <Loader2
+                            size={17}
+                            className="animate-spin"
+                          />
+                          Anulando...
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle
+                            size={17}
+                          />
+                          Confirmar anulación
                         </>
                       )}
                     </button>
