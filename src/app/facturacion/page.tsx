@@ -183,7 +183,7 @@ function estadoEfectivo(
   /*
    * Si la factura tiene pagos suficientes para cubrir
    * el total, la mostramos como PAGADA aunque por
-   * cualquier motivo el campo estado de la BD todavÃ­a
+   * cualquier motivo el campo estado de la BD todavia
    * no se haya actualizado.
    */
 
@@ -201,7 +201,7 @@ function estadoEfectivo(
 }
 
 // ==========================================================
-// PÃGINA
+// PAGINA
 // ==========================================================
 
 export default function FacturacionPage() {
@@ -702,7 +702,7 @@ export default function FacturacionPage() {
             <div>
 
               <h1 className="text-3xl font-bold text-[#3b2a20]">
-                FacturaciÃ³n
+                Facturacion
               </h1>
 
               <p className="text-sm text-[#8a7562]">
@@ -969,7 +969,7 @@ export default function FacturacionPage() {
                   e.target.value
                 )
               }
-              placeholder="Buscar por nÃºmero o cliente..."
+              placeholder="Buscar por numero o cliente..."
               className="w-full rounded-lg border border-[#e4d8ca] bg-white py-2.5 pl-10 pr-3 text-sm text-[#3b2a20] outline-none focus:border-[#8a6046]"
             />
 
@@ -1060,7 +1060,7 @@ export default function FacturacionPage() {
               estadoFiltro !==
                 "todos"
                 ? "No encontramos facturas que coincidan con los filtros."
-                : "TodavÃ­a no se ha creado ninguna factura."}
+                : "Todavia no se ha creado ninguna factura."}
 
             </p>
 
@@ -1124,7 +1124,7 @@ export default function FacturacionPage() {
                   </th>
 
                   <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    AcciÃ³n
+                    Accion
                   </th>
 
                 </tr>
@@ -1268,7 +1268,7 @@ export default function FacturacionPage() {
                             "anulada" ? (
 
                             <span className="text-sm text-[#a79586]">
-                              â€”
+                              -
                             </span>
 
                           ) : (
@@ -1293,7 +1293,7 @@ export default function FacturacionPage() {
                           null ? (
 
                             <span className="text-sm text-[#a79586]">
-                              â€”
+                              -
                             </span>
 
                           ) : saldoMostrar <=
@@ -1342,7 +1342,7 @@ export default function FacturacionPage() {
 
                         </td>
 
-                        {/* ACCIÃ“N */}
+                        {/* ACCION */}
 
                         <td className="px-5 py-4 text-right">
 
