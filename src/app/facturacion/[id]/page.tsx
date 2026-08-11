@@ -120,7 +120,7 @@ export default function FacturaDetallePage() {
 
       setError(
         facturaError?.message ||
-          "No se encontró la factura."
+          "No se encontro la factura."
       )
 
       setCargando(false)
@@ -211,7 +211,7 @@ export default function FacturaDetallePage() {
 
   function formatoFecha(fecha: string | null) {
     if (!fecha) {
-      return "—"
+      return "N/A"
     }
 
     const partes = fecha.split("-")
@@ -316,7 +316,7 @@ export default function FacturaDetallePage() {
 
     if (!Number.isFinite(monto) || monto <= 0) {
       setErrorPago(
-        "Ingresa un monto válido mayor que cero."
+        "Ingresa un monto valido mayor que cero."
       )
       return
     }
@@ -332,7 +332,7 @@ export default function FacturaDetallePage() {
 
     if (!metodoPago) {
       setErrorPago(
-        "Selecciona un método de pago."
+        "Selecciona un metodo de pago."
       )
       return
     }
@@ -390,13 +390,13 @@ export default function FacturaDetallePage() {
 
     if (!motivo) {
       setErrorAnulacion(
-        "Ingresa el motivo de la anulación."
+        "Ingresa el motivo de la anulacion."
       )
       return
     }
 
     const confirmar = window.confirm(
-      `¿Confirmas la anulación de ${numeroFactura()}? Esta acción devolverá al inventario las cantidades descontadas al emitir la factura.`
+      `Confirmas la anulacion de ${numeroFactura()}? Esta accion devolvera al inventario las cantidades descontadas al emitir la factura.`
     )
 
     if (!confirmar) {
@@ -472,13 +472,13 @@ export default function FacturaDetallePage() {
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#6b4935] hover:bg-[#f4eadf]"
         >
           <ArrowLeft size={17} />
-          Volver a facturación
+          Volver a facturacion
         </button>
 
         <Card className="border-red-200 bg-red-50">
           <CardContent className="p-6 text-sm text-red-700">
             {error ||
-              "No se encontró la factura."}
+              "No se encontro la factura."}
           </CardContent>
         </Card>
       </div>
@@ -698,7 +698,7 @@ export default function FacturaDetallePage() {
             className="mb-5 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-[#6b4935] hover:bg-[#f4eadf]"
           >
             <ArrowLeft size={17} />
-            Volver a facturación
+            Volver a facturacion
           </button>
 
           <div className="flex flex-col gap-4 border-b border-[#e4d8ca] pb-5 md:flex-row md:items-start md:justify-between">
@@ -719,7 +719,7 @@ export default function FacturaDetallePage() {
                   }
                   className="rounded-lg border border-[#e4d8ca] bg-white px-4 py-2 text-sm font-semibold text-[#5c4030] hover:bg-[#f8f3ee]"
                 >
-                  🖨️ Imprimir
+                  Imprimir
                 </button>
 
                 {puedeRegistrarPago && (
@@ -901,7 +901,7 @@ export default function FacturaDetallePage() {
 
                     <div>
                       <label className="mb-1.5 block text-sm font-medium text-[#5c4635]">
-                        Método de pago
+                        Metodo de pago
                       </label>
 
                       <select
@@ -1025,7 +1025,7 @@ export default function FacturaDetallePage() {
                   </CardTitle>
 
                   <p className="text-sm text-[#8a7562]">
-                    Esta acción cambiará la factura a anulada y devolverá al inventario las cantidades que fueron descontadas al emitirla.
+                    Esta accion cambiara la factura a anulada y devolvera al inventario las cantidades que fueron descontadas al emitirla.
                   </p>
                 </CardHeader>
 
@@ -1038,7 +1038,7 @@ export default function FacturaDetallePage() {
 
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-[#5c4635]">
-                      Motivo de la anulación
+                      Motivo de la anulacion
                     </label>
 
                     <textarea
@@ -1051,7 +1051,7 @@ export default function FacturaDetallePage() {
                       rows={4}
                       disabled={anulandoFactura}
                       className="w-full resize-y rounded-lg border border-[#d9cabb] bg-white px-3 py-2.5 text-sm text-[#3b2a20] outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-[#faf7f4]"
-                      placeholder="Describe por qué se está anulando la factura..."
+                      placeholder="Describe por que se esta anulando la factura..."
                     />
                   </div>
 
@@ -1091,7 +1091,7 @@ export default function FacturaDetallePage() {
                           <AlertTriangle
                             size={17}
                           />
-                          Confirmar anulación
+                          Confirmar anulacion
                         </>
                       )}
                     </button>
@@ -1119,7 +1119,7 @@ export default function FacturaDetallePage() {
                         </th>
 
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                          Método
+                          Metodo
                         </th>
 
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
@@ -1127,7 +1127,7 @@ export default function FacturaDetallePage() {
                         </th>
 
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                          Observación
+                          Observacion
                         </th>
 
                         <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
@@ -1155,12 +1155,12 @@ export default function FacturaDetallePage() {
 
                             <td className="px-4 py-4 text-sm text-[#5c4635]">
                               {pago.referencia ||
-                                "—"}
+                                "N/A"}
                             </td>
 
                             <td className="px-4 py-4 text-sm text-[#5c4635]">
                               {pago.observaciones ||
-                                "—"}
+                                "N/A"}
                             </td>
 
                             <td className="px-4 py-4 text-right text-sm font-bold text-green-700">
@@ -1233,7 +1233,7 @@ export default function FacturaDetallePage() {
                 {cliente?.telefono && (
                   <div>
                     <p className="text-xs text-[#8a7562]">
-                      Teléfono
+                      Telefono
                     </p>
 
                     <p className="text-sm text-[#5c4635]">
@@ -1257,7 +1257,7 @@ export default function FacturaDetallePage() {
                 {cliente?.direccion && (
                   <div>
                     <p className="text-xs text-[#8a7562]">
-                      Dirección
+                      Direccion
                     </p>
 
                     <p className="text-sm text-[#5c4635]">
@@ -1272,7 +1272,7 @@ export default function FacturaDetallePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-[#3b2a20]">
                   <CalendarDays size={19} />
-                  Información
+                  Informacion
                 </CardTitle>
               </CardHeader>
 
@@ -1301,18 +1301,18 @@ export default function FacturaDetallePage() {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-sm text-[#8a7562]">
-                    IVA
-                  </span>
+                {factura.tipo_iva !==
+                  "incluido" && (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm text-[#8a7562]">
+                      IVA
+                    </span>
 
-                  <span className="text-sm font-medium text-[#3b2a20]">
-                    {factura.tipo_iva ===
-                    "incluido"
-                      ? `Incluido (${factura.porcentaje_iva}%)`
-                      : `${factura.porcentaje_iva}%`}
-                  </span>
-                </div>
+                    <span className="text-sm font-medium text-[#3b2a20]">
+                      {factura.porcentaje_iva}%
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -1331,7 +1331,7 @@ export default function FacturaDetallePage() {
                   <thead>
                     <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
                       <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                        Descripción
+                        Descripcion
                       </th>
 
                       <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
@@ -1430,15 +1430,20 @@ export default function FacturaDetallePage() {
                   </span>
                 </div>
 
-                <div className="flex justify-between text-sm text-[#6b5746]">
-                  <span>IVA incluido</span>
+                {factura.tipo_iva !==
+                  "incluido" && (
+                  <div className="flex justify-between text-sm text-[#6b5746]">
+                    <span>
+                      IVA ({factura.porcentaje_iva}%)
+                    </span>
 
-                  <span>
-                    {formatoDinero(
-                      factura.iva
-                    )}
-                  </span>
-                </div>
+                    <span>
+                      {formatoDinero(
+                        factura.iva
+                      )}
+                    </span>
+                  </div>
+                )}
 
                 <div className="border-t border-[#e4d8ca] pt-4">
                   <div className="flex items-center justify-between text-xl font-bold text-[#3b2a20]">
@@ -1549,7 +1554,7 @@ export default function FacturaDetallePage() {
                   {cliente?.telefono && (
                     <tr>
                       <td className="py-[4px] text-[9px] text-[#777]">
-                        Teléfono:
+                        Telefono:
                       </td>
 
                       <td className="py-[4px] text-[10px]">
@@ -1573,7 +1578,7 @@ export default function FacturaDetallePage() {
                   {cliente?.direccion && (
                     <tr>
                       <td className="py-[4px] text-[9px] text-[#777]">
-                        Dirección:
+                        Direccion:
                       </td>
 
                       <td className="py-[4px] text-[10px]">
@@ -1587,7 +1592,7 @@ export default function FacturaDetallePage() {
 
             <div className="pl-12">
               <div className="print-section-title">
-                INFORMACIÓN
+                INFORMACION
               </div>
 
               <table className="w-full border-collapse">
@@ -1616,18 +1621,18 @@ export default function FacturaDetallePage() {
                     </td>
                   </tr>
 
-                  <tr>
-                    <td className="py-[5px] text-[9px] text-[#777]">
-                      IVA:
-                    </td>
+                  {factura.tipo_iva !==
+                    "incluido" && (
+                    <tr>
+                      <td className="py-[5px] text-[9px] text-[#777]">
+                        IVA:
+                      </td>
 
-                    <td className="py-[5px] text-right text-[10px]">
-                      {factura.tipo_iva ===
-                      "incluido"
-                        ? `Incluido ${factura.porcentaje_iva}%`
-                        : `${factura.porcentaje_iva}%`}
-                    </td>
-                  </tr>
+                      <td className="py-[5px] text-right text-[10px]">
+                        {factura.porcentaje_iva}%
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1642,7 +1647,7 @@ export default function FacturaDetallePage() {
               <thead>
                 <tr>
                   <th style={{ width: "35%" }}>
-                    Descripción
+                    Descripcion
                   </th>
 
                   <th style={{ width: "9%" }}>
@@ -1735,19 +1740,20 @@ export default function FacturaDetallePage() {
                 </td>
               </tr>
 
-              <tr>
-                <td>
-                  IVA incluido (
-                  {factura.porcentaje_iva}
-                  %)
-                </td>
+              {factura.tipo_iva !==
+                "incluido" && (
+                <tr>
+                  <td>
+                    IVA ({factura.porcentaje_iva}%)
+                  </td>
 
-                <td className="text-right">
-                  {formatoDinero(
-                    factura.iva
-                  )}
-                </td>
-              </tr>
+                  <td className="text-right">
+                    {formatoDinero(
+                      factura.iva
+                    )}
+                  </td>
+                </tr>
+              )}
 
               <tr>
                 <td
@@ -1828,7 +1834,7 @@ export default function FacturaDetallePage() {
                     </th>
 
                     <th style={{ width: "16%" }}>
-                      Método
+                      Metodo
                     </th>
 
                     <th style={{ width: "20%" }}>
@@ -1836,7 +1842,7 @@ export default function FacturaDetallePage() {
                     </th>
 
                     <th style={{ width: "27%" }}>
-                      Observación
+                      Observacion
                     </th>
 
                     <th style={{ width: "15%" }}>
@@ -1861,12 +1867,12 @@ export default function FacturaDetallePage() {
 
                         <td>
                           {pago.referencia ||
-                            "—"}
+                            "N/A"}
                         </td>
 
                         <td>
                           {pago.observaciones ||
-                            "—"}
+                            "N/A"}
                         </td>
 
                         <td className="text-right font-semibold">
