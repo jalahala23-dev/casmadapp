@@ -544,310 +544,164 @@ export default function InventarioPage() {
 
           ) : (
 
-            <div className="overflow-x-auto">
-
-              <table className="w-full min-w-[1000px] border-collapse">
-
-                <thead>
-
-                  <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
-
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Producto
-                    </th>
-
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Tipo
-                    </th>
-
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Precio
-                    </th>
-
-                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Stock
-                    </th>
-
-                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Estado
-                    </th>
-
-                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#6b5746]">
-                      Acciones
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                  {productosFiltrados.map(
-                    (producto) => {
-
-                      const stock =
-                        Number(
-                          producto.stock ||
-                            0
-                        )
-
-                      const esMedida =
-                        producto.tipo_producto ===
-                        "a_medida"
-
-                      const agotado =
-                        !esMedida &&
-                        stock <= 0
-
-                      const stockBajo =
-                        !esMedida &&
-                        stock > 0 &&
-                        stock <= 5
+            <>
+              {/* Vista escritorio */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Producto</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Tipo</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Precio</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Stock</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Estado</th>
+                      <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#6b5746]">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {productosFiltrados.map((producto) => {
+                      const stock = Number(producto.stock || 0)
+                      const esMedida = producto.tipo_producto === "a_medida"
+                      const agotado = !esMedida && stock <= 0
+                      const stockBajo = !esMedida && stock > 0 && stock <= 5
 
                       return (
-
-                        <tr
-                          key={
-                            producto.id
-                          }
-                          className="border-b border-[#f0e8df] transition hover:bg-[#fcfaf8]"
-                        >
-
-                          {/* PRODUCTO */}
-
+                        <tr key={producto.id} className="border-b border-[#f0e8df] transition hover:bg-[#fcfaf8]">
                           <td className="px-4 py-4">
-
                             <div className="flex items-center gap-3">
-
                               {producto.imagen_url ? (
-
-                                <img
-                                  src={
-                                    producto.imagen_url
-                                  }
-                                  alt={
-                                    producto.nombre
-                                  }
-                                  className="h-12 w-12 rounded-lg border border-[#e4d8ca] object-cover"
-                                />
-
+                                <img src={producto.imagen_url} alt={producto.nombre} className="h-12 w-12 rounded-lg border border-[#e4d8ca] object-cover" />
                               ) : (
-
                                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#f1e7dc] text-[#8a7562]">
-
-                                  <Package
-                                    size={21}
-                                  />
-
+                                  <Package size={21} />
                                 </div>
-
                               )}
-
-
                               <div>
-
-                                <p className="font-semibold text-[#3b2a20]">
-                                  {
-                                    producto.nombre
-                                  }
-                                </p>
-
+                                <p className="font-semibold text-[#3b2a20]">{producto.nombre}</p>
                                 <p className="mt-0.5 text-xs text-[#8a7562]">
-
-                                  {producto.codigo}
-
-                                  {producto.categoria
-                                    ? ` · ${producto.categoria}`
-                                    : ""}
-
+                                  {producto.codigo}{producto.categoria ? ` · ${producto.categoria}` : ""}
                                 </p>
-
                               </div>
-
                             </div>
-
                           </td>
-
-
-                          {/* TIPO */}
-
                           <td className="px-4 py-4">
-
                             {esMedida ? (
-
-                              <span className="inline-flex rounded-full bg-[#f4eadf] px-3 py-1 text-xs font-semibold text-[#6b4935]">
-                                A medida
-                              </span>
-
+                              <span className="inline-flex rounded-full bg-[#f4eadf] px-3 py-1 text-xs font-semibold text-[#6b4935]">A medida</span>
                             ) : (
-
-                              <span className="inline-flex rounded-full bg-[#eee9e4] px-3 py-1 text-xs font-semibold text-[#6b5746]">
-                                Precio fijo
-                              </span>
-
+                              <span className="inline-flex rounded-full bg-[#eee9e4] px-3 py-1 text-xs font-semibold text-[#6b5746]">Precio fijo</span>
                             )}
-
                           </td>
-
-
-                          {/* PRECIO */}
-
                           <td className="px-4 py-4 text-right text-sm font-semibold text-[#3b2a20]">
-
-                            {esMedida
-                              ? "Por cotizar"
-                              : formatoDinero(
-                                  producto.precio
-                                )}
-
+                            {esMedida ? "Por cotizar" : formatoDinero(producto.precio)}
                           </td>
-
-
-                          {/* STOCK */}
-
                           <td className="px-4 py-4 text-center">
-
                             {esMedida ? (
-
-                              <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-                                N/A
-                              </span>
-
+                              <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">N/A</span>
                             ) : (
-
-                              <span
-                                className={`
-                                  inline-flex
-                                  min-w-16
-                                  justify-center
-                                  rounded-full
-                                  px-3
-                                  py-1
-                                  text-sm
-                                  font-semibold
-                                  ${
-                                    agotado
-                                      ? "bg-red-50 text-red-700"
-                                      : stockBajo
-                                      ? "bg-orange-50 text-orange-700"
-                                      : "bg-green-50 text-green-700"
-                                  }
-                                `}
-                              >
-
+                              <span className={`inline-flex min-w-16 justify-center rounded-full px-3 py-1 text-sm font-semibold ${agotado ? "bg-red-50 text-red-700" : stockBajo ? "bg-orange-50 text-orange-700" : "bg-green-50 text-green-700"}`}>
                                 {stock}
-
                               </span>
-
                             )}
-
                           </td>
-
-
-                          {/* ESTADO */}
-
                           <td className="px-4 py-4 text-center">
-
-                            <span
-                              className={`
-                                inline-flex
-                                rounded-full
-                                px-3
-                                py-1
-                                text-xs
-                                font-semibold
-                                ${
-                                  producto.estado ===
-                                  "activo"
-                                    ? "bg-green-50 text-green-700"
-                                    : "bg-gray-100 text-gray-600"
-                                }
-                              `}
-                            >
-
-                              {producto.estado ===
-                              "activo"
-                                ? "Activo"
-                                : "Inactivo"}
-
+                            <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${producto.estado === "activo" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                              {producto.estado === "activo" ? "Activo" : "Inactivo"}
                             </span>
-
                           </td>
-
-
-                          {/* ACCIONES */}
-
                           <td className="px-4 py-4">
-
                             <div className="flex justify-end gap-2">
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  router.push(
-                                    `/muebles?editar=${producto.id}`
-                                  )
-                                }
-                                className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f5eee7]"
-                                title="Editar producto"
-                              >
-
-                                <Pencil
-                                  size={17}
-                                />
-
+                              <button type="button" onClick={() => router.push(`/muebles?editar=${producto.id}`)} className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f5eee7]" title="Editar producto">
+                                <Pencil size={17} />
                               </button>
-
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  eliminarProducto(
-                                    producto
-                                  )
-                                }
-                                disabled={
-                                  eliminando ===
-                                  producto.id
-                                }
-                                className="rounded-lg border border-red-200 bg-white p-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-                                title="Eliminar producto"
-                              >
-
-                                {eliminando ===
-                                producto.id ? (
-
-                                  <RefreshCw
-                                    size={17}
-                                    className="animate-spin"
-                                  />
-
-                                ) : (
-
-                                  <Trash2
-                                    size={17}
-                                  />
-
-                                )}
-
+                              <button type="button" onClick={() => eliminarProducto(producto)} disabled={eliminando === producto.id} className="rounded-lg border border-red-200 bg-white p-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50" title="Eliminar producto">
+                                {eliminando === producto.id ? <RefreshCw size={17} className="animate-spin" /> : <Trash2 size={17} />}
                               </button>
-
                             </div>
-
                           </td>
-
                         </tr>
-
                       )
-                    }
-                  )}
+                    })}
+                  </tbody>
+                </table>
+              </div>
 
-                </tbody>
+              {/* Vista movil */}
+              <div className="space-y-3 p-3 md:hidden">
+                {productosFiltrados.map((producto) => {
+                  const stock = Number(producto.stock || 0)
+                  const esMedida = producto.tipo_producto === "a_medida"
+                  const agotado = !esMedida && stock <= 0
+                  const stockBajo = !esMedida && stock > 0 && stock <= 5
 
-              </table>
+                  return (
+                    <div key={producto.id} className="w-full rounded-xl border border-[#e4d8ca] bg-white p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        {producto.imagen_url ? (
+                          <img src={producto.imagen_url} alt={producto.nombre} className="h-14 w-14 shrink-0 rounded-lg border border-[#e4d8ca] object-cover" />
+                        ) : (
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-[#f1e7dc] text-[#8a7562]">
+                            <Package size={24} />
+                          </div>
+                        )}
 
-            </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="break-words font-semibold text-[#3b2a20]">{producto.nombre}</p>
+                          <p className="mt-0.5 break-words text-xs text-[#8a7562]">
+                            {producto.codigo}{producto.categoria ? ` · ${producto.categoria}` : ""}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">Tipo</p>
+                          <p className="mt-1 text-sm text-[#3b2a20]">{esMedida ? "A medida" : "Precio fijo"}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">Precio</p>
+                          <p className="mt-1 text-sm font-semibold text-[#3b2a20]">{esMedida ? "Por cotizar" : formatoDinero(producto.precio)}</p>
+                        </div>
+
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">Stock</p>
+                          <div className="mt-1">
+                            {esMedida ? (
+                              <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">N/A</span>
+                            ) : (
+                              <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${agotado ? "bg-red-50 text-red-700" : stockBajo ? "bg-orange-50 text-orange-700" : "bg-green-50 text-green-700"}`}>
+                                {stock}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">Estado</p>
+                          <div className="mt-1">
+                            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${producto.estado === "activo" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                              {producto.estado === "activo" ? "Activo" : "Inactivo"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-2 border-t border-[#f0e8df] pt-4">
+                        <button type="button" onClick={() => router.push(`/muebles?editar=${producto.id}`)} className="flex items-center justify-center gap-2 rounded-lg bg-[#f4eadf] px-3 py-2.5 text-sm font-semibold text-[#6b4935] hover:bg-[#eadccd]">
+                          <Pencil size={16} />
+                          Editar
+                        </button>
+
+                        <button type="button" onClick={() => eliminarProducto(producto)} disabled={eliminando === producto.id} className="flex items-center justify-center gap-2 rounded-lg bg-red-50 px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-100 disabled:opacity-50">
+                          {eliminando === producto.id ? <RefreshCw size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                          {eliminando === producto.id ? "Eliminando..." : "Eliminar"}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
 
           )}
 

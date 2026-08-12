@@ -871,174 +871,220 @@ export default function MueblesPage() {
 
           ) : (
 
-            <div className="overflow-x-auto">
+            <div>
+              {/* VISTA ESCRITORIO */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-[#e4d8ca] text-left">
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Mueble
+                      </th>
 
-              <table className="w-full min-w-[950px]">
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Tipo
+                      </th>
 
-                <thead>
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Precio
+                      </th>
 
-                  <tr className="border-b border-[#e4d8ca] text-left">
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Stock
+                      </th>
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Mueble
-                    </th>
+                      <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Tipo
-                    </th>
-
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Precio
-                    </th>
-
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Stock
-                    </th>
-
-                    <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Acciones
-                    </th>
-
-                  </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                  {productosFiltrados.map(
-                    (producto) => (
-
+                  <tbody>
+                    {productosFiltrados.map((producto) => (
                       <tr
-                        key={
-                          producto.id
-                        }
+                        key={producto.id}
                         className="border-b border-[#f0e8df] last:border-0"
                       >
-
                         <td className="px-3 py-4">
-
                           <div>
-
                             <p className="font-semibold text-[#3b2a20]">
-                              {
-                                producto.nombre
-                              }
+                              {producto.nombre}
                             </p>
 
                             <p className="text-xs text-[#9a8775]">
-
-                              {
-                                producto.codigo
-                              }
-
+                              {producto.codigo}
                               {producto.categoria
                                 ? ` · ${producto.categoria}`
                                 : ""}
-
                             </p>
-
                           </div>
-
                         </td>
-
 
                         <td className="px-3 py-4">
-
-                          {producto.tipo_producto ===
-                          "a_medida" ? (
-
+                          {producto.tipo_producto === "a_medida" ? (
                             <span className="inline-flex items-center gap-1 rounded-full bg-[#f4eadf] px-2.5 py-1 text-xs font-medium text-[#6b4935]">
-
                               <Ruler size={13} />
-
                               A medida
-
                             </span>
-
                           ) : (
-
                             <span className="rounded-full bg-[#eee9e4] px-2.5 py-1 text-xs font-medium text-[#6b5746]">
-
                               Precio fijo
-
                             </span>
-
                           )}
-
                         </td>
-
 
                         <td className="px-3 py-4 text-sm font-semibold text-[#5c4030]">
-
-                          {producto.tipo_producto ===
-                          "a_medida"
+                          {producto.tipo_producto === "a_medida"
                             ? "Por cotizar"
-                            : `$${Number(
-                                producto.precio
-                              ).toFixed(2)}`}
-
+                            : `$${Number(producto.precio).toFixed(2)}`}
                         </td>
-
 
                         <td className="px-3 py-4 text-sm text-[#6b5746]">
-
-                          {producto.tipo_producto ===
-                          "a_medida"
+                          {producto.tipo_producto === "a_medida"
                             ? "N/A"
                             : `${producto.stock} ${producto.unidad}`}
-
                         </td>
 
-
                         <td className="px-3 py-4">
-
                           <div className="flex justify-end gap-1">
-
                             <button
                               type="button"
-                              onClick={() =>
-                                editarProducto(
-                                  producto
-                                )
-                              }
+                              onClick={() => editarProducto(producto)}
                               className="rounded-lg p-2 text-[#6b4935] hover:bg-[#f4eadf]"
                               title="Editar"
                             >
-
                               <Edit size={17} />
-
                             </button>
-
 
                             <button
                               type="button"
                               onClick={() =>
-                                eliminarProducto(
-                                  producto.id
-                                )
+                                eliminarProducto(producto.id)
                               }
                               className="rounded-lg p-2 text-red-600 hover:bg-red-50"
                               title="Eliminar"
                             >
-
                               <Trash2 size={17} />
-
                             </button>
-
                           </div>
-
                         </td>
-
                       </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-                    )
-                  )}
+              {/* VISTA MOVIL */}
+              <div className="space-y-3 p-3 md:hidden">
+                {productosFiltrados.map((producto) => (
+                  <div
+                    key={producto.id}
+                    className="w-full rounded-xl border border-[#e4d8ca] bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f4eadf] text-[#6b4935]">
+                        {producto.tipo_producto === "a_medida" ? (
+                          <Ruler size={18} />
+                        ) : (
+                          <Box size={18} />
+                        )}
+                      </div>
 
-                </tbody>
+                      <div className="min-w-0 flex-1">
+                        <p className="break-words font-semibold text-[#3b2a20]">
+                          {producto.nombre}
+                        </p>
 
-              </table>
+                        <p className="mt-0.5 break-words text-xs text-[#9a8775]">
+                          {producto.codigo}
+                          {producto.categoria
+                            ? ` · ${producto.categoria}`
+                            : ""}
+                        </p>
+                      </div>
+                    </div>
 
+                    <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Tipo
+                        </p>
+
+                        <div className="mt-1">
+                          {producto.tipo_producto === "a_medida" ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[#f4eadf] px-2.5 py-1 text-xs font-medium text-[#6b4935]">
+                              <Ruler size={13} />
+                              A medida
+                            </span>
+                          ) : (
+                            <span className="inline-block rounded-full bg-[#eee9e4] px-2.5 py-1 text-xs font-medium text-[#6b5746]">
+                              Precio fijo
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Precio
+                        </p>
+
+                        <p className="mt-1 break-words text-sm font-bold text-[#5c4030]">
+                          {producto.tipo_producto === "a_medida"
+                            ? "Por cotizar"
+                            : `$${Number(producto.precio).toFixed(2)}`}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Stock
+                        </p>
+
+                        <p className="mt-1 text-sm text-[#3b2a20]">
+                          {producto.tipo_producto === "a_medida"
+                            ? "N/A"
+                            : `${producto.stock} ${producto.unidad}`}
+                        </p>
+                      </div>
+
+                      {producto.material && (
+                        <div className="text-right">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Material
+                          </p>
+
+                          <p className="mt-1 break-words text-sm text-[#3b2a20]">
+                            {producto.material}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-2 border-t border-[#f0e8df] pt-4">
+                      <button
+                        type="button"
+                        onClick={() => editarProducto(producto)}
+                        className="flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-[#f4eadf] px-2 py-2.5 text-xs font-semibold text-[#6b4935]"
+                      >
+                        <Edit size={16} />
+                        Editar
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          eliminarProducto(producto.id)
+                        }
+                        className="flex min-w-0 items-center justify-center gap-1.5 rounded-lg bg-red-50 px-2 py-2.5 text-xs font-semibold text-red-600"
+                      >
+                        <Trash2 size={16} />
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
           )}

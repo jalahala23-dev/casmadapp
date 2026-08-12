@@ -1054,286 +1054,423 @@ export default function CotizacionesPage() {
 
           ) : (
 
-            <div className="overflow-x-auto">
+            <div>
 
-              <table className="w-full min-w-[1050px]">
+              {/* VISTA ESCRITORIO */}
+              <div className="hidden md:block overflow-x-auto">
 
-                <thead>
+                <table className="w-full">
 
-                  <tr className="border-b border-[#e4d8ca] text-left">
+                  <thead>
+                    <tr className="border-b border-[#e4d8ca] text-left">
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Número
-                    </th>
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Número
+                      </th>
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Cliente
-                    </th>
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Cliente
+                      </th>
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Fecha
-                    </th>
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Fecha
+                      </th>
 
-                    <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Estado
-                    </th>
+                      <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Estado
+                      </th>
 
-                    <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Total
-                    </th>
+                      <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Total
+                      </th>
 
-                    <th className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
-                      Acciones
-                    </th>
+                      <th className="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#8a7562]">
+                        Acciones
+                      </th>
 
-                  </tr>
+                    </tr>
+                  </thead>
 
-                </thead>
+                  <tbody>
 
+                    {cotizacionesFiltradas.map(
+                      (cotizacion) => {
 
-                <tbody>
+                        const cliente =
+                          cotizacion.clientes
 
-                  {cotizacionesFiltradas.map(
-                    (cotizacion) => {
+                        const nombre =
+                          cliente?.razon_social ||
+                          cliente?.nombre_comercial ||
+                          cliente?.nombre_completo ||
+                          "Cliente"
 
-                      const cliente =
-                        cotizacion.clientes
+                        const estaEliminando =
+                          eliminandoId ===
+                          cotizacion.id
 
-                      const nombre =
-                        cliente?.razon_social ||
-                        cliente?.nombre_comercial ||
-                        cliente?.nombre_completo ||
-                        "Cliente"
+                        const estaConvertida =
+                          cotizacion.estado ===
+                          "convertida"
 
-                      const estaEliminando =
-                        eliminandoId ===
-                        cotizacion.id
+                        return (
 
-                      const estaConvertida =
-                        cotizacion.estado ===
-                        "convertida"
-
-                      return (
-
-                        <tr
-                          key={
-                            cotizacion.id
-                          }
-                          onClick={() =>
-                            router.push(
-                              `/cotizaciones/${cotizacion.id}`
-                            )
-                          }
-                          className="cursor-pointer border-b border-[#f0e8df] last:border-0 transition hover:bg-[#fcfaf8]"
-                        >
-
-                          {/* NÚMERO */}
-
-                          <td className="px-3 py-4 font-semibold text-[#5c4030]">
-
-                            COT-
-                            {String(
-                              cotizacion.numero
-                            ).padStart(
-                              6,
-                              "0"
-                            )}
-
-                          </td>
-
-
-                          {/* CLIENTE */}
-
-                          <td className="px-3 py-4">
-
-                            <p className="font-medium text-[#3b2a20]">
-                              {nombre}
-                            </p>
-
-                          </td>
-
-
-                          {/* FECHA */}
-
-                          <td className="px-3 py-4 text-sm text-[#6b5746]">
-
-                            {cotizacion.fecha}
-
-                          </td>
-
-
-                          {/* ESTADO */}
-
-                          <td className="px-3 py-4">
-
-                            <span
-                              className={`
-                                rounded-full
-                                px-2.5
-                                py-1
-                                text-xs
-                                font-medium
-                                capitalize
-                                ${
-                                  cotizacion.estado ===
-                                  "convertida"
-                                    ? "bg-blue-50 text-blue-700"
-                                    : cotizacion.estado ===
-                                      "aprobada"
-                                    ? "bg-green-50 text-green-700"
-                                    : cotizacion.estado ===
-                                      "rechazada"
-                                    ? "bg-red-50 text-red-700"
-                                    : cotizacion.estado ===
-                                      "enviada"
-                                    ? "bg-purple-50 text-purple-700"
-                                    : cotizacion.estado ===
-                                      "vencida"
-                                    ? "bg-orange-50 text-orange-700"
-                                    : "bg-[#f4eadf] text-[#6b4935]"
-                                }
-                              `}
-                            >
-
-                              {cotizacion.estado}
-
-                            </span>
-
-                          </td>
-
-
-                          {/* TOTAL */}
-
-                          <td className="px-3 py-4 text-right font-semibold text-[#5c4030]">
-
-                            $
-                            {Number(
-                              cotizacion.total
-                            ).toFixed(2)}
-
-                          </td>
-
-
-                          {/* ACCIONES */}
-
-                          <td
-                            className="px-3 py-4"
-                            onClick={(e) =>
-                              e.stopPropagation()
+                          <tr
+                            key={cotizacion.id}
+                            onClick={() =>
+                              router.push(
+                                `/cotizaciones/${cotizacion.id}`
+                              )
                             }
+                            className="cursor-pointer border-b border-[#f0e8df] last:border-0 transition hover:bg-[#fcfaf8]"
                           >
 
-                            <div className="flex items-center justify-center gap-1.5">
+                            <td className="px-3 py-4 font-semibold text-[#5c4030]">
+                              COT-
+                              {String(
+                                cotizacion.numero
+                              ).padStart(6, "0")}
+                            </td>
 
-                              {/* VER */}
+                            <td className="px-3 py-4">
+                              <p className="font-medium text-[#3b2a20]">
+                                {nombre}
+                              </p>
+                            </td>
 
-                              <button
-                                type="button"
-                                title="Ver cotización"
-                                onClick={() =>
-                                  router.push(
-                                    `/cotizaciones/${cotizacion.id}`
-                                  )
-                                }
-                                className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f4eadf]"
-                              >
+                            <td className="px-3 py-4 text-sm text-[#6b5746]">
+                              {cotizacion.fecha}
+                            </td>
 
-                                <Eye
-                                  size={17}
-                                />
-
-                              </button>
-
-
-                              {/* EDITAR */}
-
-                              <button
-                                type="button"
-                                title="Editar cotización"
-                                onClick={() =>
-                                  router.push(
-                                    `/cotizaciones/${cotizacion.id}/editar`
-                                  )
-                                }
-                                className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f4eadf]"
-                              >
-
-                                <Pencil
-                                  size={17}
-                                />
-
-                              </button>
-
-
-                              {/* ELIMINAR */}
-
-                              <button
-                                type="button"
-                                title={
-                                  estaConvertida
-                                    ? "Una cotización convertida no se puede eliminar"
-                                    : "Eliminar cotización"
-                                }
-                                disabled={
-                                  estaEliminando ||
-                                  estaConvertida
-                                }
-                                onClick={() =>
-                                  eliminarCotizacion(
-                                    cotizacion
-                                  )
-                                }
+                            <td className="px-3 py-4">
+                              <span
                                 className={`
-                                  rounded-lg
-                                  border
-                                  p-2
-                                  transition
+                                  rounded-full
+                                  px-2.5
+                                  py-1
+                                  text-xs
+                                  font-medium
+                                  capitalize
                                   ${
-                                    estaConvertida
-                                      ? "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-300"
-                                      : "border-red-200 bg-white text-red-600 hover:bg-red-50"
-                                  }
-                                  ${
-                                    estaEliminando
-                                      ? "cursor-wait opacity-60"
-                                      : ""
+                                    cotizacion.estado ===
+                                    "convertida"
+                                      ? "bg-blue-50 text-blue-700"
+                                      : cotizacion.estado ===
+                                          "aprobada"
+                                        ? "bg-green-50 text-green-700"
+                                        : cotizacion.estado ===
+                                            "rechazada"
+                                          ? "bg-red-50 text-red-700"
+                                          : cotizacion.estado ===
+                                              "enviada"
+                                            ? "bg-purple-50 text-purple-700"
+                                            : cotizacion.estado ===
+                                                "vencida"
+                                              ? "bg-orange-50 text-orange-700"
+                                              : "bg-[#f4eadf] text-[#6b4935]"
                                   }
                                 `}
                               >
+                                {cotizacion.estado}
+                              </span>
+                            </td>
 
-                                {estaEliminando ? (
+                            <td className="px-3 py-4 text-right font-semibold text-[#5c4030]">
+                              $
+                              {Number(
+                                cotizacion.total
+                              ).toFixed(2)}
+                            </td>
 
-                                  <Loader2
-                                    size={17}
-                                    className="animate-spin"
-                                  />
+                            <td
+                              className="px-3 py-4"
+                              onClick={(e) =>
+                                e.stopPropagation()
+                              }
+                            >
+                              <div className="flex items-center justify-center gap-1.5">
 
-                                ) : (
+                                <button
+                                  type="button"
+                                  title="Ver cotización"
+                                  onClick={() =>
+                                    router.push(
+                                      `/cotizaciones/${cotizacion.id}`
+                                    )
+                                  }
+                                  className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f4eadf]"
+                                >
+                                  <Eye size={17} />
+                                </button>
 
-                                  <Trash2
-                                    size={17}
-                                  />
+                                <button
+                                  type="button"
+                                  title="Editar cotización"
+                                  onClick={() =>
+                                    router.push(
+                                      `/cotizaciones/${cotizacion.id}/editar`
+                                    )
+                                  }
+                                  className="rounded-lg border border-[#e4d8ca] bg-white p-2 text-[#6b4935] transition hover:bg-[#f4eadf]"
+                                >
+                                  <Pencil size={17} />
+                                </button>
 
-                                )}
+                                <button
+                                  type="button"
+                                  title={
+                                    estaConvertida
+                                      ? "Una cotización convertida no se puede eliminar"
+                                      : "Eliminar cotización"
+                                  }
+                                  disabled={
+                                    estaEliminando ||
+                                    estaConvertida
+                                  }
+                                  onClick={() =>
+                                    eliminarCotizacion(
+                                      cotizacion
+                                    )
+                                  }
+                                  className={`
+                                    rounded-lg
+                                    border
+                                    p-2
+                                    transition
+                                    ${
+                                      estaConvertida
+                                        ? "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-300"
+                                        : "border-red-200 bg-white text-red-600 hover:bg-red-50"
+                                    }
+                                    ${
+                                      estaEliminando
+                                        ? "cursor-wait opacity-60"
+                                        : ""
+                                    }
+                                  `}
+                                >
+                                  {estaEliminando ? (
+                                    <Loader2
+                                      size={17}
+                                      className="animate-spin"
+                                    />
+                                  ) : (
+                                    <Trash2 size={17} />
+                                  )}
+                                </button>
 
-                              </button>
+                              </div>
+                            </td>
 
-                            </div>
+                          </tr>
 
-                          </td>
+                        )
+                      }
+                    )}
 
-                        </tr>
+                  </tbody>
 
-                      )
-                    }
-                  )}
+                </table>
 
-                </tbody>
+              </div>
 
-              </table>
+
+              {/* VISTA MOVIL */}
+              <div className="space-y-3 p-3 md:hidden">
+
+                {cotizacionesFiltradas.map(
+                  (cotizacion) => {
+
+                    const cliente =
+                      cotizacion.clientes
+
+                    const nombre =
+                      cliente?.razon_social ||
+                      cliente?.nombre_comercial ||
+                      cliente?.nombre_completo ||
+                      "Cliente"
+
+                    const estaEliminando =
+                      eliminandoId ===
+                      cotizacion.id
+
+                    const estaConvertida =
+                      cotizacion.estado ===
+                      "convertida"
+
+                    return (
+
+                      <div
+                        key={cotizacion.id}
+                        onClick={() =>
+                          router.push(
+                            `/cotizaciones/${cotizacion.id}`
+                          )
+                        }
+                        className="w-full cursor-pointer rounded-xl border border-[#e4d8ca] bg-white p-4 shadow-sm transition active:bg-[#fcfaf8]"
+                      >
+
+                        <div className="flex items-start justify-between gap-3">
+
+                          <div className="min-w-0 flex-1">
+                            <p className="font-bold text-[#5c4030]">
+                              COT-
+                              {String(
+                                cotizacion.numero
+                              ).padStart(6, "0")}
+                            </p>
+
+                            <p className="mt-1 break-words font-medium text-[#3b2a20]">
+                              {nombre}
+                            </p>
+                          </div>
+
+                          <span
+                            className={`
+                              shrink-0
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-xs
+                              font-medium
+                              capitalize
+                              ${
+                                cotizacion.estado ===
+                                "convertida"
+                                  ? "bg-blue-50 text-blue-700"
+                                  : cotizacion.estado ===
+                                      "aprobada"
+                                    ? "bg-green-50 text-green-700"
+                                    : cotizacion.estado ===
+                                        "rechazada"
+                                      ? "bg-red-50 text-red-700"
+                                      : cotizacion.estado ===
+                                          "enviada"
+                                        ? "bg-purple-50 text-purple-700"
+                                        : cotizacion.estado ===
+                                            "vencida"
+                                          ? "bg-orange-50 text-orange-700"
+                                          : "bg-[#f4eadf] text-[#6b4935]"
+                              }
+                            `}
+                          >
+                            {cotizacion.estado}
+                          </span>
+
+                        </div>
+
+                        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+
+                          <div>
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                              Fecha
+                            </p>
+
+                            <p className="mt-1 text-sm text-[#3b2a20]">
+                              {cotizacion.fecha}
+                            </p>
+                          </div>
+
+                          <div className="text-right">
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                              Total
+                            </p>
+
+                            <p className="mt-1 text-sm font-bold text-[#5c4030]">
+                              $
+                              {Number(
+                                cotizacion.total
+                              ).toFixed(2)}
+                            </p>
+                          </div>
+
+                        </div>
+
+                        <div
+                          className="mt-4 grid grid-cols-3 gap-2 border-t border-[#f0e8df] pt-4"
+                          onClick={(e) =>
+                            e.stopPropagation()
+                          }
+                        >
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/cotizaciones/${cotizacion.id}`
+                              )
+                            }
+                            className="flex min-w-0 items-center justify-center gap-1 rounded-lg bg-[#f4eadf] px-2 py-2.5 text-xs font-semibold text-[#5c4030]"
+                          >
+                            <Eye size={15} />
+                            <span>Ver</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/cotizaciones/${cotizacion.id}/editar`
+                              )
+                            }
+                            className="flex min-w-0 items-center justify-center gap-1 rounded-lg bg-[#f4eadf] px-2 py-2.5 text-xs font-semibold text-[#6b4935]"
+                          >
+                            <Pencil size={15} />
+                            <span>Editar</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={
+                              estaEliminando ||
+                              estaConvertida
+                            }
+                            onClick={() =>
+                              eliminarCotizacion(
+                                cotizacion
+                              )
+                            }
+                            className={`
+                              flex
+                              min-w-0
+                              items-center
+                              justify-center
+                              gap-1
+                              rounded-lg
+                              px-2
+                              py-2.5
+                              text-xs
+                              font-semibold
+                              ${
+                                estaConvertida
+                                  ? "cursor-not-allowed bg-gray-50 text-gray-300"
+                                  : "bg-red-50 text-red-600"
+                              }
+                            `}
+                          >
+                            {estaEliminando ? (
+                              <Loader2
+                                size={15}
+                                className="animate-spin"
+                              />
+                            ) : (
+                              <Trash2 size={15} />
+                            )}
+
+                            <span>Eliminar</span>
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    )
+                  }
+                )}
+
+              </div>
 
             </div>
-
           )}
 
         </CardContent>

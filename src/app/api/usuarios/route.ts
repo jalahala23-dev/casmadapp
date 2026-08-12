@@ -43,7 +43,7 @@ async function verificarAccesoAdministrativo() {
 
   const { data: perfil, error: perfilError } = await admin
     .from("perfiles")
-    .select("id, nombre, rol, activo")
+    .select("id, nombre, telefono, rol, activo")
     .eq("id", user.id)
     .maybeSingle()
 
@@ -125,7 +125,7 @@ export async function GET() {
       await acceso.admin
         .from("perfiles")
         .select(
-          "id, nombre, rol, activo, created_at, updated_at"
+          "id, nombre, telefono, rol, activo, created_at, updated_at"
         )
 
     if (perfilesError) {
@@ -156,6 +156,7 @@ export async function GET() {
           id: "system",
           email: "system@casmad.local",
           nombre: "System",
+          telefono: null,
           rol: "sistema" as RolVisible,
           activo: true,
           protegido: true,
@@ -171,6 +172,7 @@ export async function GET() {
           perfil?.nombre ??
           usuario.email?.split("@")[0] ??
           "",
+        telefono: perfil?.telefono ?? null,
         rol: rolReal as RolVisible,
         activo: perfil?.activo ?? true,
         protegido: rolReal === "programador",
@@ -220,9 +222,9 @@ export async function POST(request: Request) {
 
     const nombre = String(body?.nombre ?? "").trim()
 
-    const rolSolicitado = String(
-      body?.rol ?? "usuario"
-    )
+    const telefono = String(body?.telefono ?? "").trim()
+
+    const rolSolicitado = String(body?.rol ?? "usuario")
       .trim()
       .toLowerCase() as RolReal
 
@@ -317,6 +319,7 @@ export async function POST(request: Request) {
       .insert({
         id: usuarioCreado.user.id,
         nombre: nombreFinal,
+        telefono: telefono || null,
         rol: rolSolicitado,
         activo: true,
       })
@@ -336,6 +339,7 @@ export async function POST(request: Request) {
           id: usuarioCreado.user.id,
           email,
           nombre: nombreFinal,
+          telefono: telefono || null,
           rol: rolSolicitado,
           activo: true,
           protegido: false,
@@ -385,7 +389,7 @@ export async function PATCH(request: Request) {
     const { data: perfilObjetivo, error: perfilError } =
       await acceso.admin
         .from("perfiles")
-        .select("id, nombre, rol, activo")
+        .select("id, nombre, telefono, rol, activo")
         .eq("id", id)
         .maybeSingle()
 
@@ -418,6 +422,7 @@ export async function PATCH(request: Request) {
 
     const cambios: {
       nombre?: string
+      telefono?: string | null
       rol?: RolReal
       activo?: boolean
       updated_at?: string
@@ -436,6 +441,11 @@ export async function PATCH(request: Request) {
       }
 
       cambios.nombre = nombre
+    }
+
+    if (body?.telefono !== undefined) {
+      const telefono = String(body.telefono ?? "").trim()
+      cambios.telefono = telefono || null
     }
 
     if (body?.rol !== undefined) {
@@ -517,7 +527,7 @@ export async function PATCH(request: Request) {
         .from("perfiles")
         .update(cambios)
         .eq("id", id)
-        .select("id, nombre, rol, activo, updated_at")
+        .select("id, nombre, telefono, rol, activo, updated_at")
         .single()
 
     if (actualizarError) {

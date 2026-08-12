@@ -1451,132 +1451,104 @@ export default function ReportesPage() {
 
             </div>
 
-            <div className="overflow-x-auto">
-
-              {facturasPeriodo.length ===
-              0 ? (
-
-                <div className="p-10 text-center text-sm text-[#8a7562]">
-                  No hay facturas en este período.
-                </div>
-
-              ) : (
-
-                <table className="w-full min-w-[700px]">
-
+            <div>
+              {/* Vista escritorio */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
                   <thead>
-
                     <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Factura
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Cliente
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Fecha
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Estado
-                      </th>
-
-                      <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Total
-                      </th>
-
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Factura</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Cliente</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Fecha</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Estado</th>
+                      <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">Total</th>
                     </tr>
-
                   </thead>
-
                   <tbody>
+                    {facturasPeriodo.slice(0, 20).map((factura) => {
+                      const cliente = factura.cliente_id
+                        ? mapaClientes.get(factura.cliente_id)
+                        : undefined
 
-                    {facturasPeriodo
-                      .slice(0, 20)
-                      .map(
-                        (factura) => {
-
-                          const cliente =
-                            factura.cliente_id
-                              ? mapaClientes.get(
-                                  factura.cliente_id
-                                )
-                              : undefined
-
-                          return (
-
-                            <tr
-                              key={
-                                factura.id
-                              }
-                              className="border-b border-[#f0e8df] last:border-0"
-                            >
-
-                              <td className="px-5 py-4 font-semibold text-[#3b2a20]">
-
-                                FAC-
-                                {String(
-                                  factura.numero
-                                ).padStart(
-                                  6,
-                                  "0"
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4 text-sm text-[#5c4635]">
-
-                                {nombreCliente(
-                                  cliente
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4 text-sm text-[#6b5746]">
-
-                                {fechaTexto(
-                                  factura.fecha
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4">
-
-                                <span className="rounded-full bg-[#f5eadf] px-3 py-1 text-xs font-semibold text-[#79583f]">
-
-                                  {
-                                    etiquetaFactura(
-                                      factura.estado
-                                    )
-                                  }
-
-                                </span>
-
-                              </td>
-
-                              <td className="px-5 py-4 text-right font-semibold text-[#3b2a20]">
-
-                                {dinero(
-                                  factura.total
-                                )}
-
-                              </td>
-
-                            </tr>
-
-                          )
-                        }
-                      )}
-
+                      return (
+                        <tr
+                          key={factura.id}
+                          className="border-b border-[#f0e8df] last:border-0"
+                        >
+                          <td className="px-5 py-4 font-semibold text-[#3b2a20]">
+                            FAC-{String(factura.numero).padStart(6, "0")}
+                          </td>
+                          <td className="px-5 py-4 text-sm text-[#5c4635]">
+                            {nombreCliente(cliente)}
+                          </td>
+                          <td className="px-5 py-4 text-sm text-[#6b5746]">
+                            {fechaTexto(factura.fecha)}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="rounded-full bg-[#f5eadf] px-3 py-1 text-xs font-semibold text-[#79583f]">
+                              {etiquetaFactura(factura.estado)}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 text-right font-semibold text-[#3b2a20]">
+                            {dinero(factura.total)}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
-
                 </table>
+              </div>
 
-              )}
+              {/* Vista movil */}
+              <div className="space-y-3 p-3 md:hidden">
+                {facturasPeriodo.slice(0, 20).map((factura) => {
+                  const cliente = factura.cliente_id
+                    ? mapaClientes.get(factura.cliente_id)
+                    : undefined
 
+                  return (
+                    <div
+                      key={factura.id}
+                      className="w-full rounded-xl border border-[#e4d8ca] bg-white p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#3b2a20]">
+                            FAC-{String(factura.numero).padStart(6, "0")}
+                          </p>
+                          <p className="mt-1 break-words text-sm font-medium text-[#5c4635]">
+                            {nombreCliente(cliente)}
+                          </p>
+                        </div>
+
+                        <span className="shrink-0 rounded-full bg-[#f5eadf] px-2.5 py-1 text-xs font-semibold text-[#79583f]">
+                          {etiquetaFactura(factura.estado)}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Fecha
+                          </p>
+                          <p className="mt-1 text-sm text-[#3b2a20]">
+                            {fechaTexto(factura.fecha)}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Total
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-[#3b2a20]">
+                            {dinero(factura.total)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
           </div>
@@ -1600,132 +1572,104 @@ export default function ReportesPage() {
 
             </div>
 
-            <div className="overflow-x-auto">
-
-              {cotizacionesPeriodo.length ===
-              0 ? (
-
-                <div className="p-10 text-center text-sm text-[#8a7562]">
-                  No hay cotizaciones en este período.
-                </div>
-
-              ) : (
-
-                <table className="w-full min-w-[700px]">
-
+            <div>
+              {/* Vista escritorio */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
                   <thead>
-
                     <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Cotización
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Cliente
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Fecha
-                      </th>
-
-                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Estado
-                      </th>
-
-                      <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                        Total
-                      </th>
-
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Cotizacion</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Cliente</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Fecha</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">Estado</th>
+                      <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">Total</th>
                     </tr>
-
                   </thead>
-
                   <tbody>
+                    {cotizacionesPeriodo.slice(0, 20).map((cotizacion) => {
+                      const cliente = cotizacion.cliente_id
+                        ? mapaClientes.get(cotizacion.cliente_id)
+                        : undefined
 
-                    {cotizacionesPeriodo
-                      .slice(0, 20)
-                      .map(
-                        (cotizacion) => {
-
-                          const cliente =
-                            cotizacion.cliente_id
-                              ? mapaClientes.get(
-                                  cotizacion.cliente_id
-                                )
-                              : undefined
-
-                          return (
-
-                            <tr
-                              key={
-                                cotizacion.id
-                              }
-                              className="border-b border-[#f0e8df] last:border-0"
-                            >
-
-                              <td className="px-5 py-4 font-semibold text-[#3b2a20]">
-
-                                COT-
-                                {String(
-                                  cotizacion.numero
-                                ).padStart(
-                                  6,
-                                  "0"
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4 text-sm text-[#5c4635]">
-
-                                {nombreCliente(
-                                  cliente
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4 text-sm text-[#6b5746]">
-
-                                {fechaTexto(
-                                  cotizacion.fecha
-                                )}
-
-                              </td>
-
-                              <td className="px-5 py-4">
-
-                                <span className="rounded-full bg-[#f5eadf] px-3 py-1 text-xs font-semibold text-[#79583f]">
-
-                                  {
-                                    etiquetaCotizacion(
-                                      cotizacion.estado
-                                    )
-                                  }
-
-                                </span>
-
-                              </td>
-
-                              <td className="px-5 py-4 text-right font-semibold text-[#3b2a20]">
-
-                                {dinero(
-                                  cotizacion.total
-                                )}
-
-                              </td>
-
-                            </tr>
-
-                          )
-                        }
-                      )}
-
+                      return (
+                        <tr
+                          key={cotizacion.id}
+                          className="border-b border-[#f0e8df] last:border-0"
+                        >
+                          <td className="px-5 py-4 font-semibold text-[#3b2a20]">
+                            COT-{String(cotizacion.numero).padStart(6, "0")}
+                          </td>
+                          <td className="px-5 py-4 text-sm text-[#5c4635]">
+                            {nombreCliente(cliente)}
+                          </td>
+                          <td className="px-5 py-4 text-sm text-[#6b5746]">
+                            {fechaTexto(cotizacion.fecha)}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="rounded-full bg-[#f5eadf] px-3 py-1 text-xs font-semibold text-[#79583f]">
+                              {etiquetaCotizacion(cotizacion.estado)}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 text-right font-semibold text-[#3b2a20]">
+                            {dinero(cotizacion.total)}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
-
                 </table>
+              </div>
 
-              )}
+              {/* Vista movil */}
+              <div className="space-y-3 p-3 md:hidden">
+                {cotizacionesPeriodo.slice(0, 20).map((cotizacion) => {
+                  const cliente = cotizacion.cliente_id
+                    ? mapaClientes.get(cotizacion.cliente_id)
+                    : undefined
 
+                  return (
+                    <div
+                      key={cotizacion.id}
+                      className="w-full rounded-xl border border-[#e4d8ca] bg-white p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#3b2a20]">
+                            COT-{String(cotizacion.numero).padStart(6, "0")}
+                          </p>
+                          <p className="mt-1 break-words text-sm font-medium text-[#5c4635]">
+                            {nombreCliente(cliente)}
+                          </p>
+                        </div>
+
+                        <span className="shrink-0 rounded-full bg-[#f5eadf] px-2.5 py-1 text-xs font-semibold text-[#79583f]">
+                          {etiquetaCotizacion(cotizacion.estado)}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Fecha
+                          </p>
+                          <p className="mt-1 text-sm text-[#3b2a20]">
+                            {fechaTexto(cotizacion.fecha)}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Total
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-[#3b2a20]">
+                            {dinero(cotizacion.total)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
           </div>

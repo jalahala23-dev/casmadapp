@@ -494,95 +494,132 @@ export default function Home() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[#eee4db] bg-[#faf7f4] text-left">
-                      <th className="px-4 py-3 font-semibold text-[#6b4935]">
-                        Cotización
-                      </th>
-
-                      <th className="px-4 py-3 font-semibold text-[#6b4935]">
-                        Cliente
-                      </th>
-
-                      <th className="px-4 py-3 font-semibold text-[#6b4935]">
-                        Fecha
-                      </th>
-
-                      <th className="px-4 py-3 font-semibold text-[#6b4935]">
-                        Estado
-                      </th>
-
-                      <th className="px-4 py-3 text-right font-semibold text-[#6b4935]">
-                        Total
-                      </th>
-
-                      <th className="px-4 py-3 text-right font-semibold text-[#6b4935]">
-                        Acción
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {cotizaciones.map(
-                      (cotizacion) => (
+              <div>
+                {/* Vista escritorio */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-[#eee4db] bg-[#faf7f4] text-left">
+                        <th className="px-4 py-3 font-semibold text-[#6b4935]">
+                          Cotizacion
+                        </th>
+                        <th className="px-4 py-3 font-semibold text-[#6b4935]">
+                          Cliente
+                        </th>
+                        <th className="px-4 py-3 font-semibold text-[#6b4935]">
+                          Fecha
+                        </th>
+                        <th className="px-4 py-3 font-semibold text-[#6b4935]">
+                          Estado
+                        </th>
+                        <th className="px-4 py-3 text-right font-semibold text-[#6b4935]">
+                          Total
+                        </th>
+                        <th className="px-4 py-3 text-right font-semibold text-[#6b4935]">
+                          Accion
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cotizaciones.map((cotizacion) => (
                         <tr
                           key={cotizacion.id}
                           className="border-b border-[#f0e7df] last:border-0"
                         >
                           <td className="px-4 py-3 font-semibold text-[#3b2a20]">
-                            {numeroCotizacion(
-                              cotizacion,
-                            )}
+                            {numeroCotizacion(cotizacion)}
                           </td>
-
                           <td className="px-4 py-3 text-[#5c4030]">
-                            {nombreCliente(
-                              cotizacion.cliente_id,
-                            )}
+                            {nombreCliente(cotizacion.cliente_id)}
                           </td>
-
                           <td className="px-4 py-3 text-[#7b6758]">
-                            {formatoFecha(
-                              cotizacion.fecha,
-                            )}
+                            {formatoFecha(cotizacion.fecha)}
                           </td>
-
                           <td className="px-4 py-3">
                             <span
                               className={`rounded-full px-2.5 py-1 text-xs font-semibold ${claseEstadoCotizacion(
                                 cotizacion.estado,
                               )}`}
                             >
-                              {estadoCotizacion(
-                                cotizacion.estado,
-                              )}
+                              {estadoCotizacion(cotizacion.estado)}
                             </span>
                           </td>
-
                           <td className="px-4 py-3 text-right font-semibold text-[#3b2a20]">
-                            {formatoDinero(
-                              cotizacion.total,
-                            )}
+                            {formatoDinero(cotizacion.total)}
                           </td>
-
                           <td className="px-4 py-3 text-right">
                             <Link
                               href={`/cotizaciones/${cotizacion.id}`}
                               className="inline-flex items-center gap-1 rounded-lg border border-[#d9c8b8] px-3 py-1.5 text-xs font-semibold text-[#5c4030] hover:bg-[#f8f1eb]"
                             >
                               Ver
-                              <ArrowUpRight
-                                size={14}
-                              />
+                              <ArrowUpRight size={14} />
                             </Link>
                           </td>
                         </tr>
-                      ),
-                    )}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Vista movil */}
+                <div className="space-y-3 md:hidden">
+                  {cotizaciones.map((cotizacion) => (
+                    <div
+                      key={cotizacion.id}
+                      className="w-full rounded-xl border border-[#e4d8ca] bg-[#fcfaf8] p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#3b2a20]">
+                            {numeroCotizacion(cotizacion)}
+                          </p>
+                          <p className="mt-1 break-words text-sm font-medium text-[#5c4030]">
+                            {nombreCliente(cotizacion.cliente_id)}
+                          </p>
+                        </div>
+
+                        <span
+                          className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${claseEstadoCotizacion(
+                            cotizacion.estado,
+                          )}`}
+                        >
+                          {estadoCotizacion(cotizacion.estado)}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#eee4db] pt-4">
+                        <div>
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Fecha
+                          </p>
+                          <p className="mt-1 text-sm text-[#5c4635]">
+                            {formatoFecha(cotizacion.fecha)}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                            Total
+                          </p>
+                          <p className="mt-1 text-sm font-bold text-[#3b2a20]">
+                            {formatoDinero(cotizacion.total)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 border-t border-[#eee4db] pt-4">
+                        <Link
+                          href={`/cotizaciones/${cotizacion.id}`}
+                          className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-[#d9c8b8] bg-white px-3 py-2.5 text-xs font-semibold text-[#5c4030] hover:bg-[#f8f1eb]"
+                        >
+                          Ver cotizacion
+                          <ArrowUpRight size={14} />
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useMemo, useState } from "react"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
@@ -12,7 +13,10 @@ import {
   BarChart3,
   Settings,
   X,
+  Loader2,
 } from "lucide-react"
+
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser"
 
 const menuItems = [
   {
@@ -41,7 +45,7 @@ const menuItems = [
     href: "/cotizaciones",
   },
   {
-    title: "Facturación",
+    title: "Facturacion",
     icon: Receipt,
     href: "/facturacion",
   },
@@ -51,7 +55,7 @@ const menuItems = [
     href: "/reportes",
   },
   {
-    title: "Configuración",
+    title: "Configuracion",
     icon: Settings,
     href: "/configuracion",
   },
@@ -62,18 +66,140 @@ type SidebarProps = {
   cerrarMenuMovil: () => void
 }
 
+type PerfilActual = {
+  nombre: string
+  telefono: string | null
+  rol: string
+}
+
 export function Sidebar({
   movilAbierto,
   cerrarMenuMovil,
 }: SidebarProps) {
   const pathname = usePathname()
 
+  const supabase = useMemo(
+    () => createSupabaseBrowserClient(),
+    []
+  )
+
+  const [perfil, setPerfil] =
+    useState<PerfilActual | null>(null)
+
+  const [cargandoPerfil, setCargandoPerfil] =
+    useState(true)
+
+  useEffect(() => {
+    let activo = true
+
+    async function cargarPerfil() {
+      setCargandoPerfil(true)
+
+      const {
+        data: usuarioData,
+        error: usuarioError,
+      } = await supabase.auth.getUser()
+
+      if (
+        usuarioError ||
+        !usuarioData.user
+      ) {
+        if (activo) {
+          setPerfil(null)
+          setCargandoPerfil(false)
+        }
+
+        return
+      }
+
+      const user = usuarioData.user
+
+      const {
+        data: perfilData,
+        error: perfilError,
+      } = await supabase
+        .from("perfiles")
+        .select("nombre, telefono, rol")
+        .eq("id", user.id)
+        .maybeSingle()
+
+      if (perfilError) {
+        console.error(
+          "ERROR AL CARGAR PERFIL:",
+          perfilError
+        )
+      }
+
+      if (!activo) {
+        return
+      }
+
+      const metadata =
+        user.user_metadata || {}
+
+      const nombre =
+        perfilData?.nombre ||
+        metadata.full_name ||
+        metadata.name ||
+        metadata.nombre ||
+        user.email?.split("@")[0] ||
+        "Usuario"
+
+      const rol =
+        perfilData?.rol ||
+        "usuario"
+
+      setPerfil({
+        nombre,
+        telefono:
+          perfilData?.telefono || null,
+        rol,
+      })
+
+      setCargandoPerfil(false)
+    }
+
+    void cargarPerfil()
+
+    const {
+      data: listener,
+    } =
+      supabase.auth.onAuthStateChange(
+        () => {
+          void cargarPerfil()
+        }
+      )
+
+    return () => {
+      activo = false
+      listener.subscription.unsubscribe()
+    }
+  }, [supabase])
+
+  const nombreUsuario =
+    perfil?.nombre || "Usuario"
+
+  const rolUsuario =
+    perfil?.rol === "administrador"
+      ? "Administrador"
+      : perfil?.rol === "programador"
+        ? "Programador"
+        : perfil?.rol === "sistema"
+          ? "Sistema"
+          : "Usuario"
+
+  const inicial =
+    nombreUsuario
+      .trim()
+      .charAt(0)
+      .toUpperCase() || "U"
+
   return (
     <>
       {movilAbierto && (
         <button
           type="button"
-          aria-label="Cerrar menú"
+          aria-label="Cerrar menu"
           onClick={cerrarMenuMovil}
           className="fixed inset-0 z-40 bg-black/45 md:hidden"
         />
@@ -97,30 +223,44 @@ export function Sidebar({
           }
         `}
       >
-        <div className="flex items-start justify-between border-b border-[#5c4635] px-5 py-5 md:block md:px-6 md:py-6">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              CASMAD
-            </h1>
+        {/* ENCABEZADO */}
 
-            <p className="mt-1 text-sm text-[#d8c2a8]">
-              Muebles Castillo
-            </p>
+        <div className="border-b border-[#5c4635] px-4 py-5">
+          <div className="flex items-center gap-3">
+            <div className="shrink-0">
+              <img
+                src="/casmad-logo.png"
+                alt="CASMAD"
+                className="h-14 w-14 rounded-full object-cover"
+              />
+            </div>
 
-            <p className="text-xs text-[#a98f75]">
-              Sistema Administrativo
-            </p>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl font-bold tracking-tight text-white">
+                CASMAD
+              </h1>
+
+              <p className="mt-0.5 text-sm text-[#d8c2a8]">
+                Muebles Castillo
+              </p>
+
+              <p className="text-xs text-[#a98f75]">
+                Sistema Administrativo
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Cerrar menu"
+              onClick={cerrarMenuMovil}
+              className="shrink-0 rounded-lg p-2 text-[#eadfd3] transition hover:bg-[#574132] md:hidden"
+            >
+              <X size={22} />
+            </button>
           </div>
-
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            onClick={cerrarMenuMovil}
-            className="rounded-lg p-2 text-[#eadfd3] hover:bg-[#574132] md:hidden"
-          >
-            <X size={22} />
-          </button>
         </div>
+
+        {/* MENU */}
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
           {menuItems.map((item) => {
@@ -151,20 +291,50 @@ export function Sidebar({
                 `}
               >
                 <Icon size={19} />
-                <span>{item.title}</span>
+
+                <span>
+                  {item.title}
+                </span>
               </Link>
             )
           })}
         </nav>
 
-        <div className="border-t border-[#5c4635] p-4">
-          <p className="text-xs text-[#a98f75]">
-            CASMAD ERP
-          </p>
+        {/* USUARIO */}
 
-          <p className="text-xs text-[#d8c2a8]">
-            Muebles Castillo
-          </p>
+        <div className="border-t border-[#5c4635] p-4">
+          {cargandoPerfil ? (
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#5c4030]">
+                <Loader2
+                  size={18}
+                  className="animate-spin text-[#d8c2a8]"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm text-[#eadfd3]">
+                  Cargando...
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#171717] text-sm font-semibold text-white ring-1 ring-[#806b58]">
+                {inicial}
+              </div>
+
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-white">
+                  {nombreUsuario}
+                </p>
+
+                <p className="text-xs text-[#d8c2a8]">
+                  {rolUsuario}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
     </>

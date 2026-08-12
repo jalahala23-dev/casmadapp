@@ -29,6 +29,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabase-browser"
 type UsuarioActual = {
   email: string
   nombre: string
+  telefono: string | null
+  rol: string
 }
 
 type Notificacion = {
@@ -105,17 +107,34 @@ export function Topbar({
       const metadata =
         user.user_metadata || {}
 
+      const { data: perfilData, error: perfilError } =
+        await supabase
+          .from("perfiles")
+          .select("nombre, telefono, rol")
+          .eq("id", user.id)
+          .maybeSingle()
+
+      if (perfilError) {
+        console.error(
+          "ERROR AL OBTENER PERFIL:",
+          perfilError
+        )
+      }
+
       const nombre =
+        perfilData?.nombre ||
         metadata.full_name ||
         metadata.name ||
         metadata.nombre ||
         user.email.split("@")[0] ||
-        "Administrador"
+        "Usuario"
 
       if (activo) {
         setUsuario({
           email: user.email,
           nombre,
+          telefono: perfilData?.telefono || null,
+          rol: perfilData?.rol || "usuario",
         })
       }
     }
@@ -286,22 +305,32 @@ export function Topbar({
             sesion?.user?.email
           ) {
             const metadata =
-              sesion.user
-                .user_metadata || {}
+              sesion.user.user_metadata || {}
+
+            const { data: perfilData } =
+              await supabase
+                .from("perfiles")
+                .select("nombre, telefono, rol")
+                .eq("id", sesion.user.id)
+                .maybeSingle()
 
             const nombre =
+              perfilData?.nombre ||
               metadata.full_name ||
               metadata.name ||
               metadata.nombre ||
               sesion.user.email.split(
                 "@"
               )[0] ||
-              "Administrador"
+              "Usuario"
 
             setUsuario({
-              email:
-                sesion.user.email,
+              email: sesion.user.email,
               nombre,
+              telefono:
+                perfilData?.telefono || null,
+              rol:
+                perfilData?.rol || "usuario",
             })
           }
         }
@@ -368,7 +397,16 @@ export function Topbar({
 
   const correoUsuario =
     usuario?.email ||
-    "Sesión activa"
+    "Sesion activa"
+
+  const rolUsuario =
+    usuario?.rol === "administrador"
+      ? "Administrador"
+      : usuario?.rol === "programador"
+        ? "Programador"
+        : usuario?.rol === "sistema"
+          ? "Sistema"
+          : "Usuario"
 
   const mostrarPuntoNotificaciones =
     notificaciones.length > 0 &&
@@ -543,7 +581,7 @@ export function Topbar({
                 </p>
 
                 <p className="text-xs text-[#9a8775]">
-                  Administrador
+                  {rolUsuario}
                 </p>
               </div>
 

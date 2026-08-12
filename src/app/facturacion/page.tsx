@@ -1087,88 +1087,59 @@ export default function FacturacionPage() {
 
         ) : (
 
-          <div className="overflow-x-auto">
+          <div>
+            {/* Vista escritorio */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Factura
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Cliente
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Fecha
+                    </th>
+                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Estado
+                    </th>
+                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Total
+                    </th>
+                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Pagado
+                    </th>
+                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Saldo
+                    </th>
+                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
+                      Accion
+                    </th>
+                  </tr>
+                </thead>
 
-            <table className="w-full min-w-[1050px]">
-
-              <thead>
-
-                <tr className="border-b border-[#e4d8ca] bg-[#faf7f4]">
-
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Factura
-                  </th>
-
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Cliente
-                  </th>
-
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Fecha
-                  </th>
-
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Estado
-                  </th>
-
-                  <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Total
-                  </th>
-
-                  <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Pagado
-                  </th>
-
-                  <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Saldo
-                  </th>
-
-                  <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-[#79583f]">
-                    Accion
-                  </th>
-
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-                {facturasFiltradas.map(
-                  (factura) => {
-
+                <tbody>
+                  {facturasFiltradas.map((factura) => {
                     const numero =
-                      `FAC-${String(
-                        factura.numero
-                      ).padStart(
-                        6,
-                        "0"
-                      )}`
+                      `FAC-${String(factura.numero).padStart(6, "0")}`
 
-                    const estado =
-                      estadoEfectivo(
-                        factura
-                      )
+                    const estado = estadoEfectivo(factura)
 
                     const esPendiente =
-                      estado ===
-                        "emitida" &&
-                      factura.saldoPendiente >
-                        0.009
+                      estado === "emitida" &&
+                      factura.saldoPendiente > 0.009
 
                     const saldoMostrar =
-                      estado ===
-                        "borrador" ||
-                      estado ===
-                        "anulada"
+                      estado === "borrador" ||
+                      estado === "anulada"
                         ? null
                         : factura.saldoPendiente
 
                     return (
-
                       <tr
-                        key={
-                          factura.id
-                        }
+                        key={factura.id}
                         role="link"
                         tabIndex={0}
                         aria-label={`Ver ${numero}`}
@@ -1179,13 +1150,10 @@ export default function FacturacionPage() {
                         }
                         onKeyDown={(event) => {
                           if (
-                            event.key ===
-                              "Enter" ||
-                            event.key ===
-                              " "
+                            event.key === "Enter" ||
+                            event.key === " "
                           ) {
                             event.preventDefault()
-
                             router.push(
                               `/facturacion/${factura.id}`
                             )
@@ -1193,184 +1161,245 @@ export default function FacturacionPage() {
                         }}
                         className="cursor-pointer border-b border-[#f0e8df] last:border-0 hover:bg-[#fcfaf8] focus:bg-[#fcfaf8] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#8a6046]"
                       >
-
-                        {/* FACTURA */}
-
                         <td className="px-5 py-4">
-
                           <p className="font-semibold text-[#3b2a20]">
-
                             {numero}
-
                           </p>
-
                         </td>
-
-                        {/* CLIENTE */}
 
                         <td className="px-5 py-4">
-
                           <p className="font-medium text-[#4d392b]">
-
-                            {nombreCliente(
-                              factura.cliente
-                            )}
-
+                            {nombreCliente(factura.cliente)}
                           </p>
-
                         </td>
-
-                        {/* FECHA */}
 
                         <td className="px-5 py-4 text-sm text-[#6b5746]">
-
-                          {formatoFecha(
-                            factura.fecha
-                          )}
-
+                          {formatoFecha(factura.fecha)}
                         </td>
 
-                        {/* ESTADO */}
-
                         <td className="px-5 py-4">
-
                           <span
                             className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${claseEstado(
                               estado
                             )}`}
                           >
-
-                            {etiquetaEstado(
-                              estado
-                            )}
-
+                            {etiquetaEstado(estado)}
                           </span>
-
                         </td>
-
-                        {/* TOTAL */}
 
                         <td className="px-5 py-4 text-right font-semibold text-[#3b2a20]">
-
-                          {formatoDinero(
-                            factura.total
-                          )}
-
+                          {formatoDinero(factura.total)}
                         </td>
 
-                        {/* PAGADO */}
-
                         <td className="px-5 py-4 text-right">
-
-                          {estado ===
-                            "borrador" ||
-                          estado ===
-                            "anulada" ? (
-
+                          {estado === "borrador" ||
+                          estado === "anulada" ? (
                             <span className="text-sm text-[#a79586]">
                               -
                             </span>
-
                           ) : (
-
                             <span className="font-semibold text-green-700">
-
                               {formatoDinero(
                                 factura.totalPagado
                               )}
-
                             </span>
-
                           )}
-
                         </td>
 
-                        {/* SALDO */}
-
                         <td className="px-5 py-4 text-right">
-
-                          {saldoMostrar ===
-                          null ? (
-
+                          {saldoMostrar === null ? (
                             <span className="text-sm text-[#a79586]">
                               -
                             </span>
-
-                          ) : saldoMostrar <=
-                            0.009 ? (
-
+                          ) : saldoMostrar <= 0.009 ? (
                             <span className="font-semibold text-green-700">
-
                               $0.00
-
                             </span>
-
                           ) : (
-
                             <div className="flex flex-col items-end">
-
                               <span
-                                className={`
-                                  font-bold
-                                  ${
-                                    esPendiente
-                                      ? "text-[#8a6046]"
-                                      : "text-[#3b2a20]"
-                                  }
-                                `}
+                                className={`font-bold ${
+                                  esPendiente
+                                    ? "text-[#8a6046]"
+                                    : "text-[#3b2a20]"
+                                }`}
                               >
-
-                                {formatoDinero(
-                                  saldoMostrar
-                                )}
-
+                                {formatoDinero(saldoMostrar)}
                               </span>
 
                               {esPendiente && (
-
                                 <span className="text-[11px] font-medium text-[#a17c5e]">
-
                                   Pendiente
-
                                 </span>
-
                               )}
-
                             </div>
-
                           )}
-
                         </td>
 
-                        {/* ACCION */}
-
-                        <td className="px-5 py-4 text-right">
-
+                        <td
+                          className="px-5 py-4 text-right"
+                          onClick={(event) =>
+                            event.stopPropagation()
+                          }
+                        >
                           <Link
                             href={`/facturacion/${factura.id}`}
                             className="inline-flex items-center gap-2 rounded-lg border border-[#dccbbb] px-3 py-2 text-sm font-medium text-[#5c4030] transition hover:bg-[#f5ede5]"
                           >
-
-                            <Eye
-                              size={16}
-                            />
-
+                            <Eye size={16} />
                             Ver
-
                           </Link>
-
                         </td>
-
                       </tr>
-
                     )
-                  }
-                )}
+                  })}
+                </tbody>
+              </table>
+            </div>
 
-              </tbody>
+            {/* Vista movil */}
+            <div className="space-y-3 p-3 md:hidden">
+              {facturasFiltradas.map((factura) => {
+                const numero =
+                  `FAC-${String(factura.numero).padStart(6, "0")}`
 
-            </table>
+                const estado = estadoEfectivo(factura)
 
+                const esPendiente =
+                  estado === "emitida" &&
+                  factura.saldoPendiente > 0.009
+
+                const saldoMostrar =
+                  estado === "borrador" ||
+                  estado === "anulada"
+                    ? null
+                    : factura.saldoPendiente
+
+                return (
+                  <div
+                    key={factura.id}
+                    onClick={() =>
+                      router.push(
+                        `/facturacion/${factura.id}`
+                      )
+                    }
+                    className="w-full cursor-pointer rounded-xl border border-[#e4d8ca] bg-white p-4 shadow-sm transition active:bg-[#fcfaf8]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-[#3b2a20]">
+                          {numero}
+                        </p>
+
+                        <p className="mt-1 break-words font-medium text-[#4d392b]">
+                          {nombreCliente(factura.cliente)}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${claseEstado(
+                          estado
+                        )}`}
+                      >
+                        {etiquetaEstado(estado)}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-3 border-t border-[#f0e8df] pt-4">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Fecha
+                        </p>
+                        <p className="mt-1 text-sm text-[#3b2a20]">
+                          {formatoFecha(factura.fecha)}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Total
+                        </p>
+                        <p className="mt-1 text-sm font-bold text-[#3b2a20]">
+                          {formatoDinero(factura.total)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Pagado
+                        </p>
+
+                        <p className="mt-1 text-sm">
+                          {estado === "borrador" ||
+                          estado === "anulada" ? (
+                            <span className="text-[#a79586]">
+                              -
+                            </span>
+                          ) : (
+                            <span className="font-semibold text-green-700">
+                              {formatoDinero(
+                                factura.totalPagado
+                              )}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9a8775]">
+                          Saldo
+                        </p>
+
+                        <p className="mt-1 text-sm">
+                          {saldoMostrar === null ? (
+                            <span className="text-[#a79586]">
+                              -
+                            </span>
+                          ) : saldoMostrar <= 0.009 ? (
+                            <span className="font-semibold text-green-700">
+                              $0.00
+                            </span>
+                          ) : (
+                            <span
+                              className={`font-bold ${
+                                esPendiente
+                                  ? "text-[#8a6046]"
+                                  : "text-[#3b2a20]"
+                              }`}
+                            >
+                              {formatoDinero(saldoMostrar)}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    {esPendiente && (
+                      <p className="mt-1 text-right text-[11px] font-medium text-[#a17c5e]">
+                        Pendiente por cobrar
+                      </p>
+                    )}
+
+                    <div
+                      className="mt-4 border-t border-[#f0e8df] pt-4"
+                      onClick={(event) =>
+                        event.stopPropagation()
+                      }
+                    >
+                      <Link
+                        href={`/facturacion/${factura.id}`}
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#f4eadf] px-3 py-2.5 text-sm font-semibold text-[#5c4030]"
+                      >
+                        <Eye size={16} />
+                        Ver factura
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
         )}

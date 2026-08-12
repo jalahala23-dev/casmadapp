@@ -7,6 +7,7 @@ import {
   Loader2,
   LockKeyhole,
   Mail,
+  Pencil,
   Plus,
   Save,
   ShieldCheck,
@@ -27,6 +28,7 @@ type Usuario = {
   id: string
   email: string
   nombre: string
+  telefono: string | null
   rol: RolUsuario
   activo: boolean
   protegido?: boolean
@@ -77,8 +79,18 @@ export default function UsuariosPage() {
 
   const [nombre, setNombre] = useState("")
   const [email, setEmail] = useState("")
+  const [telefono, setTelefono] = useState("")
   const [rol, setRol] =
     useState<RolCreable>("usuario")
+
+  const [usuarioEditando, setUsuarioEditando] =
+    useState<Usuario | null>(null)
+  const [editNombre, setEditNombre] = useState("")
+  const [editTelefono, setEditTelefono] = useState("")
+  const [editRol, setEditRol] =
+    useState<RolCreable>("usuario")
+  const [guardandoEdicion, setGuardandoEdicion] =
+    useState(false)
   const [password, setPassword] =
     useState("Casmad26")
 
@@ -150,6 +162,7 @@ export default function UsuariosPage() {
         body: JSON.stringify({
           nombre,
           email,
+          telefono,
           rol,
           password,
         }),
@@ -172,6 +185,7 @@ export default function UsuariosPage() {
 
       setNombre("")
       setEmail("")
+      setTelefono("")
       setRol("usuario")
       setPassword("Casmad26")
       setMostrarFormulario(false)
@@ -185,6 +199,89 @@ export default function UsuariosPage() {
       )
     } finally {
       setCreando(false)
+    }
+  }
+
+  function abrirEdicion(usuario: Usuario) {
+    if (usuario.protegido) {
+      return
+    }
+
+    setUsuarioEditando(usuario)
+    setEditNombre(usuario.nombre || "")
+    setEditTelefono(usuario.telefono || "")
+    setEditRol(
+      usuario.rol === "administrador"
+        ? "administrador"
+        : "usuario"
+    )
+    setMensaje("")
+    setError("")
+  }
+
+  function cerrarEdicion() {
+    if (guardandoEdicion) {
+      return
+    }
+
+    setUsuarioEditando(null)
+    setEditNombre("")
+    setEditTelefono("")
+    setEditRol("usuario")
+  }
+
+  async function guardarEdicion(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault()
+
+    if (!usuarioEditando) {
+      return
+    }
+
+    setGuardandoEdicion(true)
+    setActualizando(usuarioEditando.id)
+    setMensaje("")
+    setError("")
+
+    try {
+      const response = await fetch("/api/usuarios", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: usuarioEditando.id,
+          nombre: editNombre,
+          telefono: editTelefono,
+          rol: editRol,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error ||
+            "No se pudo actualizar el usuario."
+        )
+      }
+
+      setMensaje(
+        `Usuario ${editNombre || usuarioEditando.email} actualizado correctamente.`
+      )
+
+      cerrarEdicion()
+      await cargarUsuarios()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No se pudo actualizar el usuario."
+      )
+    } finally {
+      setGuardandoEdicion(false)
+      setActualizando(null)
     }
   }
 
@@ -509,6 +606,22 @@ export default function UsuariosPage() {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-[#5c4030]">
+                Telefono
+              </label>
+
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(event) =>
+                  setTelefono(event.target.value)
+                }
+                placeholder="Numero de telefono"
+                className="w-full rounded-lg border border-[#e4d8ca] bg-white px-3 py-3 text-sm text-[#3b2a20] outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-[#5c4030]">
                 Correo electrónico
               </label>
 
@@ -597,6 +710,7 @@ export default function UsuariosPage() {
                   setMostrarFormulario(false)
                   setNombre("")
                   setEmail("")
+                  setTelefono("")
                   setRol("usuario")
                   setPassword("Casmad26")
                 }}
@@ -627,6 +741,132 @@ export default function UsuariosPage() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* EDITAR USUARIO */}
+
+      {usuarioEditando && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/45 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-[#e4d8ca] bg-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#eee4da] px-5 py-4">
+              <div>
+                <h2 className="font-bold text-[#3b2a20]">
+                  Editar usuario
+                </h2>
+
+                <p className="mt-1 text-xs text-[#8a7562]">
+                  Actualiza los datos del perfil.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={cerrarEdicion}
+                disabled={guardandoEdicion}
+                className="rounded-lg p-2 text-[#6b4935] hover:bg-[#f4eadf] disabled:opacity-50"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <form
+              onSubmit={guardarEdicion}
+              className="space-y-4 p-5"
+            >
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5c4030]">
+                  Nombre
+                </label>
+
+                <input
+                  type="text"
+                  value={editNombre}
+                  onChange={(event) =>
+                    setEditNombre(event.target.value)
+                  }
+                  required
+                  className="w-full rounded-lg border border-[#e4d8ca] bg-white px-3 py-3 text-sm text-[#3b2a20] outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5c4030]">
+                  Telefono
+                </label>
+
+                <input
+                  type="tel"
+                  value={editTelefono}
+                  onChange={(event) =>
+                    setEditTelefono(event.target.value)
+                  }
+                  placeholder="Numero de telefono"
+                  className="w-full rounded-lg border border-[#e4d8ca] bg-white px-3 py-3 text-sm text-[#3b2a20] outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#5c4030]">
+                  Rol
+                </label>
+
+                <select
+                  value={editRol}
+                  onChange={(event) =>
+                    setEditRol(
+                      event.target.value as RolCreable
+                    )
+                  }
+                  className="w-full rounded-lg border border-[#e4d8ca] bg-white px-3 py-3 text-sm text-[#3b2a20] outline-none focus:border-[#a67c52] focus:ring-2 focus:ring-[#a67c52]/20"
+                >
+                  <option value="usuario">
+                    Usuario
+                  </option>
+
+                  <option value="administrador">
+                    Administrador
+                  </option>
+                </select>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={cerrarEdicion}
+                  disabled={guardandoEdicion}
+                  className="rounded-lg border border-[#dccbbb] px-4 py-2.5 text-sm font-medium text-[#6b4935] hover:bg-[#faf7f4] disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={
+                    guardandoEdicion ||
+                    !editNombre.trim()
+                  }
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#5c4030] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4b3326] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {guardandoEdicion ? (
+                    <>
+                      <Loader2
+                        size={18}
+                        className="animate-spin"
+                      />
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      <Save size={18} />
+                      Guardar cambios
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -712,6 +952,12 @@ export default function UsuariosPage() {
                           ? "Cuenta interna del sistema"
                           : usuario.email}
                       </p>
+
+                      {!esSistema && (
+                        <p className="text-sm text-[#8a7562]">
+                          Tel: {usuario.telefono || "Sin telefono"}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -787,6 +1033,20 @@ export default function UsuariosPage() {
                         "Inactivo"
                       )}
                     </button>
+
+                    {!protegido && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          abrirEdicion(usuario)
+                        }
+                        disabled={trabajando}
+                        title="Editar usuario"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#e4d8ca] text-[#6b4935] transition hover:bg-[#f4eadf] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Pencil size={17} />
+                      </button>
+                    )}
 
                     {!protegido && (
                       <button
