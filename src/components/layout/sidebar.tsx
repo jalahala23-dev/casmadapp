@@ -188,6 +188,25 @@ export function Sidebar({
           ? "Sistema"
           : "Usuario"
 
+  /*
+   * Solo Programador y Administrador
+   * pueden acceder a Configuración.
+   */
+  const puedeAdministrar =
+    perfil?.rol === "administrador" ||
+    perfil?.rol === "programador"
+
+  /*
+   * Para usuarios normales ocultamos
+   * Configuración del menú.
+   */
+  const menuItemsVisibles =
+    menuItems.filter(
+      (item) =>
+        item.href !== "/configuracion" ||
+        puedeAdministrar
+    )
+
   const inicial =
     nombreUsuario
       .trim()
@@ -263,7 +282,7 @@ export function Sidebar({
         {/* MENU */}
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-          {menuItems.map((item) => {
+          {menuItemsVisibles.map((item) => {
             const Icon = item.icon
 
             const active =
