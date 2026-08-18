@@ -37,6 +37,9 @@ type Factura = {
   iva: number
   total: number
   observaciones: string | null
+  atendido_por_id: string | null
+  atendido_por_nombre: string | null
+  atendido_por_telefono: string | null
 }
 
 type Cliente = {
@@ -1313,6 +1316,28 @@ export default function FacturaDetallePage() {
                     </span>
                   </div>
                 )}
+
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-[#8a7562]">
+                    Atendido por
+                  </span>
+
+                  <span className="text-right text-sm font-medium text-[#3b2a20]">
+                    {factura.atendido_por_nombre || "-"}
+                  </span>
+                </div>
+
+                {factura.atendido_por_telefono && (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm text-[#8a7562]">
+                      Telefono de atencion
+                    </span>
+
+                    <span className="text-right text-sm font-medium text-[#3b2a20]">
+                      {factura.atendido_por_telefono}
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -1630,6 +1655,28 @@ export default function FacturaDetallePage() {
 
                       <td className="py-[5px] text-right text-[10px]">
                         {factura.porcentaje_iva}%
+                      </td>
+                    </tr>
+                  )}
+
+                  <tr>
+                    <td className="py-[5px] text-[9px] text-[#777]">
+                      Atendido por:
+                    </td>
+
+                    <td className="py-[5px] text-right text-[10px]">
+                      {factura.atendido_por_nombre || "-"}
+                    </td>
+                  </tr>
+
+                  {factura.atendido_por_telefono && (
+                    <tr>
+                      <td className="py-[5px] text-[9px] text-[#777]">
+                        Tel. atencion:
+                      </td>
+
+                      <td className="py-[5px] text-right text-[10px]">
+                        {factura.atendido_por_telefono}
                       </td>
                     </tr>
                   )}

@@ -36,6 +36,9 @@ type Cotizacion = {
   iva: number
   total: number
   observaciones: string | null
+  atendido_por_id: string | null
+  atendido_por_nombre: string | null
+  atendido_por_telefono: string | null
 }
 
 type Cliente = {
@@ -669,8 +672,8 @@ export default function CotizacionDetallePage() {
 
           .print-info {
 
-            height: 145px !important;
-            min-height: 145px !important;
+            height: 185px !important;
+            min-height: 185px !important;
 
             margin: 0 0 28px !important;
 
@@ -1330,6 +1333,28 @@ export default function CotizacionDetallePage() {
 
                 </div>
 
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-[#8a7562]">
+                    Atendido por
+                  </span>
+
+                  <span className="text-right text-sm font-medium text-[#3b2a20]">
+                    {cotizacion.atendido_por_nombre || "â€”"}
+                  </span>
+                </div>
+
+                {cotizacion.atendido_por_telefono && (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm text-[#8a7562]">
+                      Telefono de atencion
+                    </span>
+
+                    <span className="text-right text-sm font-medium text-[#3b2a20]">
+                      {cotizacion.atendido_por_telefono}
+                    </span>
+                  </div>
+                )}
+
               </CardContent>
 
             </Card>
@@ -1848,6 +1873,28 @@ export default function CotizacionDetallePage() {
                     </td>
 
                   </tr>
+
+                  <tr>
+                    <td className="py-[5px] text-[9px] text-[#777]">
+                      Atendido por:
+                    </td>
+
+                    <td className="py-[5px] text-right text-[10px]">
+                      {cotizacion.atendido_por_nombre || "â€”"}
+                    </td>
+                  </tr>
+
+                  {cotizacion.atendido_por_telefono && (
+                    <tr>
+                      <td className="py-[5px] text-[9px] text-[#777]">
+                        Tel. atencion:
+                      </td>
+
+                      <td className="py-[5px] text-right text-[10px]">
+                        {cotizacion.atendido_por_telefono}
+                      </td>
+                    </tr>
+                  )}
 
                 </tbody>
 
