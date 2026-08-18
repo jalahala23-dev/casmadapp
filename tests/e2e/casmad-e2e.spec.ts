@@ -519,9 +519,34 @@ async function crearCliente(
 async function editarCliente(
   page: Page
 ) {
+  /*
+   * Entramos primero al detalle normal.
+   * Es más estable que depender directamente
+   * de ?editar=1 durante la carga inicial.
+   */
   await page.goto(
-    `/clientes/${clienteId}?editar=1`
+    `/clientes/${clienteId}`
   )
+
+  await expect(
+    page.getByRole("heading", {
+      name: datosPrueba.clienteNombre,
+      exact: true,
+    })
+  ).toBeVisible({
+    timeout: 15000,
+  })
+
+  /*
+   * Activar edición desde el botón real
+   * de la interfaz.
+   */
+  await page
+    .getByRole("button", {
+      name: "Editar cliente",
+      exact: true,
+    })
+    .click()
 
   await expect(
     page.getByRole("heading", {
@@ -529,22 +554,83 @@ async function editarCliente(
       exact: true,
     })
   ).toBeVisible({
-    timeout: 15000,
+    timeout: 10000,
   })
 
-  await inputPorEtiqueta(
-    page,
-    "Nombre completo *"
-  ).fill(
-    datosPrueba.clienteNombreEditado
+  const nombreInput =
+    inputPorEtiqueta(
+      page,
+      "Nombre completo *"
+    )
+
+  const telefonoInput =
+    inputPorEtiqueta(
+      page,
+      "Telefono"
+    )
+
+  /*
+   * Confirmar que el formulario cargó
+   * los datos originales antes de editar.
+   */
+  await expect(
+    nombreInput
+  ).toHaveValue(
+    datosPrueba.clienteNombre
   )
 
-  await inputPorEtiqueta(
-    page,
-    "Telefono"
-  ).fill(
-    datosPrueba.clienteTelefono
-  )
+  /*
+   * La pantalla puede terminar una carga de datos
+   * justo después de entrar en modo edición y volver
+   * a colocar los valores originales en los inputs.
+   *
+   * Reintentamos la escritura hasta comprobar que
+   * ambos valores permanecen estables.
+   */
+  await expect(
+    async () => {
+      await nombreInput.fill(
+        datosPrueba.clienteNombreEditado
+      )
+
+      await telefonoInput.fill(
+        datosPrueba.clienteTelefono
+      )
+
+      await expect(
+        nombreInput
+      ).toHaveValue(
+        datosPrueba.clienteNombreEditado
+      )
+
+      await expect(
+        telefonoInput
+      ).toHaveValue(
+        datosPrueba.clienteTelefono
+      )
+
+      /*
+       * Dar tiempo suficiente para detectar si
+       * una carga tardía vuelve a sobrescribirlos.
+       */
+      await page.waitForTimeout(500)
+
+      await expect(
+        nombreInput
+      ).toHaveValue(
+        datosPrueba.clienteNombreEditado
+      )
+
+      await expect(
+        telefonoInput
+      ).toHaveValue(
+        datosPrueba.clienteTelefono
+      )
+    }
+  ).toPass({
+    timeout: 10000,
+    intervals: [250, 500, 1000],
+  })
 
   await page
     .getByRole("button", {
@@ -554,21 +640,21 @@ async function editarCliente(
     .click()
 
   /*
-   * No dependemos del encabezado con el nombre nuevo.
-   * La señal estable de que terminó el guardado es que
-   * desaparezca el formulario "Editar cliente".
+   * Si el update termina correctamente,
+   * CASMAD sale del modo edición y actualiza
+   * el encabezado con el nombre guardado.
    */
   await expect(
     page.getByRole("heading", {
-      name: "Editar cliente",
+      name: datosPrueba.clienteNombreEditado,
       exact: true,
     })
-  ).toBeHidden({
+  ).toBeVisible({
     timeout: 15000,
   })
 
   /*
-   * La verificación real se hace contra Supabase.
+   * Verificación definitiva en Supabase.
    */
   await expect
     .poll(
@@ -578,7 +664,9 @@ async function editarCliente(
           error,
         } = await supabase
           .from("clientes")
-          .select("nombre_completo, telefono")
+          .select(
+            "nombre_completo, telefono"
+          )
           .eq("id", clienteId!)
           .single()
 
@@ -1661,21 +1749,62 @@ async function probarFacturaIvaIncluido(
     .first()
     .click()
 
-  await page.waitForURL(
-    /\/facturacion\/[^/]+$/,
-    {
-      timeout: 15000,
-    }
-  )
+  /*
+   * No tomamos el ID desde la URL porque
+   * /facturacion/nueva también cumple una ruta
+   * del tipo /facturacion/{algo}.
+   *
+   * En su lugar esperamos directamente a que
+   * Supabase confirme que el borrador fue creado.
+   */
+  await expect
+    .poll(
+      async () => {
+        const {
+          data,
+          error,
+        } = await supabase
+          .from("facturas")
+          .select(
+            "id, estado, tipo_iva"
+          )
+          .eq(
+            "cliente_id",
+            clienteId!
+          )
+          .eq(
+            "estado",
+            "borrador"
+          )
+          .eq(
+            "tipo_iva",
+            "incluido"
+          )
+          .order(
+            "created_at",
+            {
+              ascending: false,
+            }
+          )
+          .limit(1)
+          .maybeSingle()
 
-  const partesUrl =
-    new URL(page.url())
-      .pathname
-      .split("/")
-      .filter(Boolean)
+        if (error) {
+          throw error
+        }
 
-  facturaIvaIncluidoId =
-    partesUrl.at(-1) ?? null
+        if (data) {
+          facturaIvaIncluidoId =
+            data.id
+        }
+
+        return data?.id ?? null
+      },
+      {
+        timeout: 15000,
+      }
+    )
+    .not.toBeNull()
 
   if (
     !facturaIvaIncluidoId
