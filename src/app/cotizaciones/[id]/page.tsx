@@ -335,67 +335,25 @@ export default function CotizacionDetallePage() {
     setError("")
 
     try {
-      /*
-       * ------------------------------------------------------
-       * 1. ELIMINAR DETALLES
-       * ------------------------------------------------------
-       */
+      const respuesta = await fetch(
+        `/api/cotizaciones/${cotizacion.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
 
-      const {
-        error: errorDetalles,
-      } = await supabase
-        .from("cotizacion_detalles")
-        .delete()
-        .eq(
-          "cotizacion_id",
-          cotizacion.id
-        )
+      const resultado =
+        await respuesta.json()
 
-      if (errorDetalles) {
-        console.error(
-          "ERROR AL ELIMINAR DETALLES:",
-          errorDetalles
-        )
-
+      if (!respuesta.ok) {
         throw new Error(
-          errorDetalles.message ||
-            "No se pudieron eliminar los detalles de la cotización."
-        )
-      }
-
-      /*
-       * ------------------------------------------------------
-       * 2. ELIMINAR COTIZACIÓN
-       * ------------------------------------------------------
-       */
-
-      const {
-        error: errorCotizacion,
-      } = await supabase
-        .from("cotizaciones")
-        .delete()
-        .eq(
-          "id",
-          cotizacion.id
-        )
-
-      if (errorCotizacion) {
-        console.error(
-          "ERROR AL ELIMINAR COTIZACIÓN:",
-          errorCotizacion
-        )
-
-        throw new Error(
-          errorCotizacion.message ||
+          resultado?.error ||
             "No se pudo eliminar la cotización."
         )
       }
-
-      /*
-       * ------------------------------------------------------
-       * 3. VOLVER AL LISTADO
-       * ------------------------------------------------------
-       */
 
       router.push(
         "/cotizaciones"

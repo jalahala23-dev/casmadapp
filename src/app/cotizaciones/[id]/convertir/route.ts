@@ -59,8 +59,11 @@ async function verificarAdministrador() {
   if (
     perfilError ||
     !perfil ||
-    perfil.rol !== "administrador" ||
-    !perfil.activo
+    !perfil.activo ||
+    (
+      perfil.rol !== "administrador" &&
+      perfil.rol !== "programador"
+    )
   ) {
     return {
       autorizado: false as const,
